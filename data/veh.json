@@ -1,0 +1,46 @@
+{
+  "aircrafts" : [
+    {
+      "id": "CA-0001", "speed": 50, "stuffN": 5, "maxPassengerN": 100, "fuelState": [200, 200],
+      "route": ["APC0207", "APC0607", "APC0909"], "movementType": "THERE_AND_BACK"
+    },
+    {
+      "id": "CA-0002", "speed": 45, "stuffN": 10, "maxPassengerN": 300, "fuelState": [400, 400],
+      "route": ["APC0207", "APC0503", "APC0408"], "movementType": "CIRCLES"
+    },
+    {
+      "id": "CA-0003", "speed": 50, "stuffN": 5, "maxPassengerN": 100, "fuelState": [200, 200],
+      "route": ["APC0909", "APC0607", "APC0207"], "movementType": "THERE_AND_BACK"
+    }
+  ],
+  "ships" : [
+    {
+      "id": "CS-0001", "speed": 20, "maxPassengerN": 1000, "company": "STH",
+      "route": ["JUW0101", "JUW1101", "JUW0705", "JUW0709", "JUW0109"], "movementType": "CIRCLES"
+    },
+    {
+      "id": "CS-0002", "speed": 25, "maxPassengerN": 200, "company": "STH",
+      "route": ["JUW0201", "JUW0505", "JUW1101"], "movementType": "CIRCLES"
+    },
+    {
+      "id": "CS-0003", "speed": 20, "maxPassengerN": 100, "company": "STH",
+      "route": ["JUW0705", "JUW1104", "JUW1106"], "movementType": "CIRCLES"
+    }
+  ],
+  "_airplanes": [
+    {
+      "id": "CA-0002", "speed": 8, "stuffN": 10, "maxPassengerN": 150, "fuelState": [200, 200],
+      "route": ["APC0909", "JUA0908", "JUA0907", "APC0607", "JUA0407", "JUA0307", "APC0207"]
+    }
+  ],
+  "_ships": [
+    {
+      "id": "CS-0001", "origin": "JUW1104", "speed": 0.2, "heading": "W", "maxPassengerN": 1000, "company": "STH",
+      "route": []
+    },
+    {
+      "id": "AC-0001", "origin": "JUW0101", "speed": 0.2, "heading": "S", "weaponType": "Rockets",
+      "route": []
+    }
+  ]
+}
