@@ -1,8 +1,8 @@
 package data;
 
-import obj.network.Junction;
-import obj.network.NetworkObject;
-import obj.network.Track;
+import object.network.Junction;
+import object.network.NetworkObject;
+import object.network.Track;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,17 +20,17 @@ class Graph {
 
     private final HashMap<String, Node> nodes = new HashMap<>();
 
-    public Graph(HashSet<String> nodesId_a, HashSet<String> nodesId_j, Database.ObjectAssignment assignment) {
-        if (assignment == Database.ObjectAssignment.AIR) {
+    public Graph(HashSet<String> nodesId_a, HashSet<String> nodesId_j, char assignment) {
+        if (assignment == 'A') {
             for (String nodeId : nodesId_a)
                 nodes.put(nodeId, new Node(nodeId));
             for (String nodeId : nodesId_j)
-                if (((NetworkObject) Database.getAppObjects().get(nodeId)).getAssignment() == Database.ObjectAssignment.AIR)
+                if (((NetworkObject) Database.getAppObjects().get(nodeId)).getAssignment() == 'A')
                     nodes.put(nodeId, new Node(nodeId));
         }
         else {
             for (String nodeId : nodesId_j)
-                if (((NetworkObject) Database.getAppObjects().get(nodeId)).getAssignment() == Database.ObjectAssignment.WATER)
+                if (((NetworkObject) Database.getAppObjects().get(nodeId)).getAssignment() == 'W')
                     nodes.put(nodeId, new Node(nodeId));
         }
        createConnections();

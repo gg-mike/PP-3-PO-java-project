@@ -1,27 +1,20 @@
-package obj.network;
+package object.network;
 
-import data.Database;
 import data.TableCellComponent;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
-import obj.base.AppObject;
-import util.Utility;
+import object.base.AppObject;
 
 import java.util.HashSet;
 
 public abstract class NetworkObject extends AppObject {
     protected volatile HashSet<String> using;
     protected volatile boolean isOpened;
-    protected final Database.ObjectAssignment assignment;
 
     public NetworkObject(String data) {
         super(data);
         using = new HashSet<>();
         isOpened = true;
-        if (Utility.StringInfo.getObjectAssignment() == 'A')
-            assignment = Database.ObjectAssignment.AIR;
-        else
-            assignment = Database.ObjectAssignment.WATER;
     }
 
     public HashSet<String> getUsing() {
@@ -48,19 +41,11 @@ public abstract class NetworkObject extends AppObject {
             return false;
     }
 
-    public Database.ObjectAssignment getAssignment() {
-        return assignment;
+    public char getAssignment() {
+        return getId().charAt(2);
     }
 
-    public void update() {
-        if (objectType != Database.ObjectType.TR)
-            if (!isOpened) {
-                shape.setStrokeWidth(2);
-                shape.setStroke(Color.RED);
-            }
-            else
-                shape.setStrokeWidth(0);
-    }
+    public void update() { guiComponent.update((isOpened)? null : Color.RED); }
 
     @Override
     public String toString() {

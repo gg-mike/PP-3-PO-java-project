@@ -1,49 +1,34 @@
-package obj.base;
+package object.base;
 import data.Database;
+import data.GUIComponent;
 import data.TableCellComponent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import util.Utility;
 
 public abstract class AppObject {
-    protected volatile Shape shape;
-    protected Database.ObjectType objectType;
+    protected GUIComponent guiComponent;
 
     public AppObject(String data) {
         Utility.JSONInfo.init(data);
         Utility.StringInfo.init(Utility.JSONInfo.get("id").toString());
-        shape = new Circle();
-        shape.setId(Utility.StringInfo.getId());
-        shape.setUserData(Utility.StringInfo.getId());
-        ((Circle) shape).setCenterX(Utility.StringInfo.getX());
-        ((Circle) shape).setCenterY(Utility.StringInfo.getY());
-        objectType = Database.ObjectType.valueOf(Utility.StringInfo.getObjectType());
+        if (!Utility.StringInfo.getId().startsWith("TR"))
+            guiComponent = new GUIComponent(Utility.StringInfo.getId(), Utility.StringInfo.getX(), Utility.StringInfo.getY());
     }
 
-    public Shape getShape() {
-        return shape;
-    }
+    public Shape getShape() { return guiComponent.getShape(); }
 
-    public void setShape(Shape shape) {
-        this.shape = shape;
-    }
+    public double getX() { return guiComponent.getCoords()[0]; }
 
-    public double getX() { return ((Circle) this.shape).getCenterX(); }
-
-    public double getY() { return ((Circle) this.shape).getCenterY(); }
-
-    public void setX(double x) { ((Circle) this.shape).setCenterX(x); }
-
-    public void setY(double y) { ((Circle) this.shape).setCenterY(y); }
+    public double getY() { return guiComponent.getCoords()[1]; }
 
     public String getId() {
-        return shape.getId();
+        return guiComponent.getId();
     }
 
     public Database.ObjectType getType() {
-        return objectType;
+        return Database.ObjectType.valueOf(getId().substring(0, 2));
     }
 
     public abstract void update();

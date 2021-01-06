@@ -1,19 +1,13 @@
-package obj.network;
+package object.network;
 
 import data.MovementComponent;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 import java.util.HashMap;
 
 public class Junction extends NetworkObject {
     protected HashMap<MovementComponent.Heading, String> tracks = new HashMap<>();
 
-    public Junction(String data) {
-        super(data);
-        shape.setFill(Color.valueOf("#9cdb43"));
-        ((Circle) shape).setRadius(8);
-    }
+    public Junction(String data) { super(data); }
 
     public void addTrack(MovementComponent.Heading heading, String trackId) {
         tracks.put(heading, trackId);

@@ -1,25 +1,20 @@
 package data;
 
 import javafx.animation.AnimationTimer;
-import obj.base.AppObject;
-import obj.base.MovingObject;
-import obj.network.*;
-import obj.vehicle.aircraft.*;
-import obj.vehicle.ship.*;
+import object.base.AppObject;
+import object.base.MovingObject;
+import object.network.*;
+import object.vehicle.aircraft.*;
+import object.vehicle.ship.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import util.Utility;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Database {
-    public enum ObjectAssignment { AIR, WATER }
     public enum ObjectType { AP, JU, TR, CA, MA, CS, AC }
 
     private static final HashMap<String, AppObject> appObjects = new HashMap<>();
@@ -30,11 +25,18 @@ public class Database {
     private static final HashSet<String> junctions = new HashSet<>();
     private static final HashSet<String> tracks = new HashSet<>();
     private static final HashSet<String> airports = new HashSet<>();
+    private static final ArrayList<String> ids = new ArrayList<>();
     private static Graph airGraph;
     private static Graph waterGraph;
     public static boolean isInit = false;
 
-    public static void init(String[] filenames, String[][] keys) {
+
+    /**
+     * Init database with json files
+     * @param filenames list of all json files in which data is stored
+     * @param keys list of all keys for a given json file
+     */
+    public static void init(String [] filenames, String[][] keys) {
         for (int i = 0; i < filenames.length; i++) {
             for (int j = 0; j < keys[i].length; j++) {
                 try {
@@ -47,19 +49,23 @@ public class Database {
             }
         }
         isInit = true;
-        airGraph = new Graph(airports, junctions, ObjectAssignment.AIR);
-        waterGraph = new Graph(airports, junctions, ObjectAssignment.WATER);
+        airGraph = new Graph(airports, junctions, 'A');
+        waterGraph = new Graph(airports, junctions, 'W');
         for (String id : appObjects.keySet())
             if (appObjects.get(id) instanceof MovingObject)
                 ((MovingObject) appObjects.get(id)).initRoute();
+        ids.addAll(tracks);
+        ids.addAll(junctions);
+        ids.addAll(airports);
+        ids.addAll(ships);
+        ids.addAll(aircrafts);
         createThreads();
     }
 
     private static void initAppObjects(JSONArray contents) {
         for (int i = 0; i < contents.length(); i++) {
             JSONObject obj = contents.getJSONObject(i);
-            Utility.StringInfo.init(obj.getString("id"));
-            switch (ObjectType.valueOf(Utility.StringInfo.getObjectType())) {
+            switch (ObjectType.valueOf(obj.getString("id").substring(0, 2))) {
                 case AP -> {
                     appObjects.put(obj.getString("id"), new Airport(obj.toString()));
                     airports.add(obj.getString("id"));
@@ -115,6 +121,10 @@ public class Database {
             ((MovingObject) appObjects.get(threadKey)).startStop();
     }
 
+    /**
+     * End specific thread and remove it from threads HashMap
+     * @param id id of MovingObject which is to be ended
+     */
     public static void endThread(String id) {
         if (threads.containsKey(id)) {
             try {
@@ -127,6 +137,9 @@ public class Database {
         }
     }
 
+    /**
+     * End all running threads and clear threads HashMap
+     */
     public static void endThreads() {
         if (threads.size() != 0) {
             for (String threadKey : threads.keySet()) {
@@ -141,6 +154,9 @@ public class Database {
         }
     }
 
+    /**
+     * Clear database and end all running threads
+     */
     public static void clear() {
         endThreads();
         animationTimer.stop();
@@ -150,6 +166,7 @@ public class Database {
         junctions.clear();
         tracks.clear();
         airports.clear();
+        ids.clear();
         isInit = false;
     }
 
@@ -162,9 +179,9 @@ public class Database {
         return null;
     }
 
-    public static LinkedList<String> createRoute(String startId, String endId, ObjectAssignment assignment) {
+    public static LinkedList<String> createRoute(String startId, String endId, char assignment) {
         Graph graph;
-        if (assignment == ObjectAssignment.AIR) graph = airGraph;
+        if (assignment == 'A') graph = airGraph;
         else graph = waterGraph;
         LinkedList<String> route = new LinkedList<>();
 
@@ -220,6 +237,8 @@ public class Database {
     public static HashSet<String> getTracks() { return tracks; }
 
     public static HashSet<String> getAirports() { return airports; }
+
+    public static ArrayList<String> getIds() { return ids; }
 
     public static boolean isInit() { return isInit; }
 

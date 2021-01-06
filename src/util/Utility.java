@@ -45,20 +45,10 @@ public class Utility {
 
         public static String getId() { return stringData; }
 
-        public static String getObjectType() { return stringData.substring(0, 2); }
-
-        public static char getObjectAssignment() { return stringData.charAt(2); }
-
         public static double getX() { return 50d * Double.parseDouble(stringData.substring(3, 5)); }
 
         public static double getY() { return 50d * Double.parseDouble(stringData.substring(5, 7)); }
 
-        public static String toStringStatic() {
-            return  "id: " + stringData + "\n" +
-                    "  type:   " + getObjectType() + "\n" +
-                    "  assign: " + getObjectAssignment() + "\n" +
-                    "  (x, y): " + getX() + ", " + getY() + "\n";
-        }
     }
 
     public static class Math {

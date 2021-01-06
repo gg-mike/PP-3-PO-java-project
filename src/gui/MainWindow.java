@@ -4,6 +4,7 @@ import data.Database;
 import data.TableCellComponent;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -14,11 +15,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-import obj.vehicle.aircraft.Aircraft;
-import obj.vehicle.ship.AircraftCarrier;
+import object.base.MovingObject;
+import object.vehicle.aircraft.Aircraft;
+import object.vehicle.ship.AircraftCarrier;
 import util.Utility;
-
-import java.util.*;
 
 public class MainWindow {
 
@@ -28,6 +28,7 @@ public class MainWindow {
     public Pane map;
     public ScrollPane infoTabScrollPane;
     public Tab mapTab, infoTab;
+    public CheckBox idLabelsCheckbox, objectsOnJunctionsCheckbox;
     private AnimationTimer tableRefresher;
     private String objectChosenId;
     public TableView<TableCellComponent> objectDataTable;
@@ -42,11 +43,7 @@ public class MainWindow {
                 {"junctions", "airports", "tracks"},
                 {"aircrafts", "ships"}});
         objectsGroup = new Group();
-        initShapes(Database.getTracks());
-        initShapes(Database.getJunctions());
-        initShapes(Database.getAirports());
-        initShapes(Database.getShips());
-        initShapes(Database.getAircrafts());
+        initNodes();
         map.getChildren().add(objectsGroup);
         initButton.setDisable(true);
         startStopButton.setDisable(false);
@@ -58,10 +55,12 @@ public class MainWindow {
         };
     }
 
-    private void initShapes(HashSet<String> hashSet) {
-        for (String key : hashSet) {
-            Database.getAppObjects().get(key).getShape().setOnMouseClicked(this::objectChosen);
-            objectsGroup.getChildren().add((Database.getAppObjects().get(key)).getShape());
+    private void initNodes() {
+        for (String id : Database.getIds()) {
+            Database.getAppObjects().get(id).getShape().setOnMouseClicked(this::objectChosen);
+            objectsGroup.getChildren().add((Database.getAppObjects().get(id)).getShape());
+            if (Database.getAppObjects().get(id) instanceof MovingObject)
+                objectsGroup.getChildren().add(((MovingObject) (Database.getAppObjects().get(id))).getLabel());
         }
     }
 
@@ -112,6 +111,18 @@ public class MainWindow {
         }
     }
 
+    public void idLabelsController(ActionEvent actionEvent) {
+        for (String id : Database.getAppObjects().keySet())
+            if (Database.getAppObjects().get(id) instanceof MovingObject)
+                ((MovingObject) Database.getAppObjects().get(id)).setLabelVisible(idLabelsCheckbox.isSelected());
+    }
+
+    public void objectsOnJunctionsController(ActionEvent actionEvent) {
+        for (String id : Database.getAppObjects().keySet())
+            if (Database.getAppObjects().get(id) instanceof MovingObject)
+                ((MovingObject) Database.getAppObjects().get(id)).setVisibleOnJunction(objectsOnJunctionsCheckbox.isSelected());
+    }
+
     private void objectButtonSet(Button objButton, String id, String text, boolean isVisible, boolean isDisable,
                                  javafx.event.EventHandler<? super javafx.scene.input.MouseEvent> eventHandler) {
         objButton.setId(id);
@@ -140,6 +151,10 @@ public class MainWindow {
         }
     }
 
+    // ---
+    // Map
+    // ---
+
     public void zoomMap(ScrollEvent event) {
         Scale scale = new Scale();
         double prevScaleFactor = scaleFactor;
@@ -167,5 +182,6 @@ public class MainWindow {
         mouseInitPosX = dragEvent.getX();
         mouseInitPosY = dragEvent.getY();
     }
+
 }
 

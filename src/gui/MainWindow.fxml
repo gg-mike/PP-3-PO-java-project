@@ -12,7 +12,11 @@
         <ToolBar minHeight="40.0" prefHeight="40.0" prefWidth="200.0">
             <Button fx:id="initButton" mnemonicParsing="false" onAction="#init" prefWidth="50.0" text="Init" />
             <Button fx:id="resetButton" mnemonicParsing="false" onAction="#reset" prefWidth="50.0" text="Reset" />
+         <Separator orientation="VERTICAL" prefHeight="200.0" />
             <Button fx:id="startStopButton" disable="true" mnemonicParsing="false" onAction="#startStop" prefWidth="30.0" text="⏯" />
+         <Separator orientation="VERTICAL" prefHeight="200.0" />
+         <CheckBox fx:id="idLabelsCheckbox" mnemonicParsing="false" onAction="#idLabelsController" selected="true" text="Labels" />
+         <CheckBox fx:id="objectsOnJunctionsCheckbox" mnemonicParsing="false" onAction="#objectsOnJunctionsController" text="Objects on junctions" />
         </ToolBar>
         <HBox prefHeight="560.0" prefWidth="936.0">
             <TabPane fx:id="mainTabPane" prefHeight="529.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" tabMaxWidth="50.0" tabMinWidth="50.0" HBox.hgrow="ALWAYS">

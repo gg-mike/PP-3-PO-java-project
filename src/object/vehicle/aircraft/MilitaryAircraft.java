@@ -1,9 +1,9 @@
-package obj.vehicle.aircraft;
+package object.vehicle.aircraft;
 
 import data.Database;
 import data.TableCellComponent;
 import javafx.collections.ObservableList;
-import obj.network.Airport;
+import object.network.Airport;
 import util.Utility;
 
 public final class MilitaryAircraft extends Aircraft {
@@ -28,7 +28,8 @@ public final class MilitaryAircraft extends Aircraft {
                     if (((Airport) Database.getAppObjects().get(destId)).removeUsing(getId())) {
                         currState = State.WAITING_TRACK;
                         airport_action = AIRPORT_ACTION.NONE;
-                        if (setNewDestID()) generateNewRoute();
+                        setNewDestID();
+                        if(destId == null) generateNewRoute();
                     }
                     else
                         System.out.println("Removing from airport error");

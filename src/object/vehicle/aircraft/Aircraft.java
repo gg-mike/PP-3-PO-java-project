@@ -1,10 +1,10 @@
-package obj.vehicle.aircraft;
+package object.vehicle.aircraft;
 
 import data.TableCellComponent;
 import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
-import obj.base.MovingObject;
+import object.base.MovingObject;
 import util.Utility;
 
 import java.util.ArrayList;

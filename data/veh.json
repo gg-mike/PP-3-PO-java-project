@@ -9,7 +9,7 @@
       "route": ["APC0207", "APC0503", "APC0408"], "movementType": "CIRCLES"
     },
     {
-      "id": "CA-0003", "speed": 50, "stuffN": 5, "maxPassengerN": 100, "fuelState": [200, 200],
+      "id": "MA-0001", "speed": 60, "stuffN": 5, "weaponType": "Rockets", "fuelState": [200, 200],
       "route": ["APC0909", "APC0607", "APC0207"], "movementType": "THERE_AND_BACK"
     }
   ],
@@ -23,7 +23,7 @@
       "route": ["JUW0201", "JUW0505", "JUW1101"], "movementType": "CIRCLES"
     },
     {
-      "id": "CS-0003", "speed": 20, "maxPassengerN": 100, "company": "STH",
+      "id": "AC-0001", "speed": 15, "weaponType": "Rockets",
       "route": ["JUW0705", "JUW1104", "JUW1106"], "movementType": "CIRCLES"
     }
   ],

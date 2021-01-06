@@ -42,7 +42,7 @@ public class MovementComponent {
 
     public Heading getHeading() { return heading; }
 
-    private boolean setHeading() {
+    private void setHeading() {
         double addX=0, addY = 0;
         if (x % 50 != 0) {
             if (heading == Heading.E) addX = offset;
@@ -55,20 +55,16 @@ public class MovementComponent {
         if (x + addX == destX) {
             if (y + addY < destY) heading = Heading.S;
             else heading = Heading.N;
-            return true;
         }
         else if (y + addY == destY) {
             if (x + addX > destX) heading = Heading.W;
             else heading = Heading.E;
-            return true;
         }
-        else
-            return false;
     }
 
     public double getSpeed() { return speed; }
 
-    public double getSpeedX() {
+    private double getSpeedX() {
         return switch (heading) {
             case N, S -> 0;
             case E -> speed;
@@ -76,7 +72,7 @@ public class MovementComponent {
         };
     }
 
-    public double getSpeedY() {
+    private double getSpeedY() {
         return switch (heading) {
             case E, W -> 0;
             case N -> -speed;
@@ -88,39 +84,39 @@ public class MovementComponent {
 
     public double getY() { return y; }
 
-    public void setDestFirstTime(double destX, double destY) {
+    public void setDest(double destX, double destY, double nextDestX, double nextDestY) {
+        this.destX = destX;
+        this.destY = destY;
+        setDest(nextDestX, nextDestY);
+        this.x = destX;
+        this.y = destY;
         this.destX = destX;
         this.destY = destY;
     }
 
-    public boolean setDest(double destX, double destY) {
+    public void setDest(double destX, double destY) {
         double prevDestX = this.destX;
         double prevDestY = this.destY;
         this.destX = destX;
         this.destY = destY;
-        if(setHeading()) {
-            switch (heading) {
-                case N -> {
-                    x = destX;
-                    y = prevDestY - offset;
-                }
-                case E -> {
-                    y = destY;
-                    x = prevDestX + offset;
-                }
-                case S -> {
-                    x = destX;
-                    y = prevDestY + offset;
-                }
-                case W -> {
-                    y = destY;
-                    x = prevDestX - offset;
-                }
+        setHeading();
+        switch (heading) {
+            case N -> {
+                x = destX;
+                y = prevDestY - offset;
             }
-            return true;
+            case E -> {
+                y = destY;
+                x = prevDestX + offset;
+            }
+            case S -> {
+                x = destX;
+                y = prevDestY + offset;
+            }
+            case W -> {
+                y = destY;
+                x = prevDestX - offset;
+            }
         }
-        else
-            return false;
     }
-
 }

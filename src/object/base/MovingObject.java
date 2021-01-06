@@ -1,16 +1,12 @@
-package obj.base;
+package object.base;
 
-import data.Database;
-import data.MovementComponent;
-import data.TableCellComponent;
-import data.ThreadComponent;
+import data.*;
 import javafx.collections.ObservableList;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import obj.network.Airport;
-import obj.network.Junction;
-import obj.network.Track;
-import obj.vehicle.Movable;
+import javafx.scene.control.Label;
+import object.network.Airport;
+import object.network.Junction;
+import object.network.Track;
+import object.vehicle.Movable;
 import util.Utility;
 
 import java.util.*;
@@ -20,45 +16,40 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     public final int fps = 10;
 
     protected volatile ThreadComponent threadInfo = new ThreadComponent(false, fps);
-    protected volatile MovementComponent movementInfo;
     protected final MovementType movementType;
     protected LinkedList<String> destRoute;
     protected LinkedList<String> intermediateRoute;
-    protected String destId = "";
+    protected String destId = null;
     protected State currState;
     private String currTrackUsed = null;
-    private final double speed;
 
     public MovingObject(String data) {
         super(data);
         destRoute = Utility.Convertors.array2linkedList(Utility.JSONInfo.getArray("route"));
-        shape.setFill(Color.BLACK);
-        speed = ((Number) Utility.JSONInfo.get("speed")).doubleValue();
         movementType = MovementType.valueOf(((String) Utility.JSONInfo.get("movementType")));
         if (movementType == MovementType.CIRCLES)
             destRoute.add(destRoute.getFirst());
-        ((Circle) shape).setRadius(5);
+
+        guiComponent = new GUIMovableComponent(guiComponent,
+                ((Number) Utility.JSONInfo.get("speed")).doubleValue() / fps, 10);
     }
 
     public void initRoute() {
         intermediateRoute = buildIntermediateRoute();
         if (checkRoute()) {
             destId = intermediateRoute.remove();
-            ((Circle) shape).setCenterX(Database.getAppObjects().get(destId).getX());
-            ((Circle) shape).setCenterY(Database.getAppObjects().get(destId).getY());
-            if (Database.getAppObjects().get(destId).objectType == Database.ObjectType.AP)
+            double destX = Database.getAppObjects().get(destId).getX();
+            double destY = Database.getAppObjects().get(destId).getY();
+            if (Database.getAppObjects().get(destId).getId().startsWith("AP"))
                 currState = State.WAITING_AIRPORT;
             else
                 currState = State.WAITING_JUNCTION;
             if (intermediateRoute.size() != 0) {
                 String nextDestId = intermediateRoute.getFirst();
-                double destX = Database.getAppObjects().get(nextDestId).getX();
-                double destY = Database.getAppObjects().get(nextDestId).getY();
-                movementInfo = new MovementComponent(speed / fps, getX(), getY(), destX, destY, 10);
-                movementInfo.setDestFirstTime(getX(), getY());
+                double nextDestX = Database.getAppObjects().get(nextDestId).getX();
+                double nextDestY = Database.getAppObjects().get(nextDestId).getY();
+                ((GUIMovableComponent) guiComponent).init(destX, destY, nextDestX, nextDestY);
             }
-            else
-                movementInfo = new MovementComponent(speed / fps, getX(), getY(), 10);
         }
     }
 
@@ -73,11 +64,7 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
 
     protected LinkedList<String> buildIntermediateRoute() {
         LinkedList<String> ir = new LinkedList<>();
-        Database.ObjectAssignment assignment;
-        if (objectType == Database.ObjectType.CA || objectType == Database.ObjectType.MA)
-            assignment = Database.ObjectAssignment.AIR;
-        else
-            assignment = Database.ObjectAssignment.WATER;
+        char assignment = (getId().startsWith("CA") || getId().startsWith("MA"))? 'A' : 'W';
         for (int i = 0; i < destRoute.size() - 1; i++) {
             ir.addAll(Database.createRoute(destRoute.get(i), destRoute.get(i+1), assignment));
             ir.removeLast();
@@ -86,25 +73,25 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
         return ir;
     }
 
-    protected boolean setNewDestID() {
+    protected void setNewDestID() {
         if (intermediateRoute.size() != 0) {
             destId = intermediateRoute.remove();
             double destX = Database.getAppObjects().get(destId).getX();
             double destY = Database.getAppObjects().get(destId).getY();
-            if (!movementInfo.setDest(destX, destY))
-                System.out.println("MovingObject.setNewDestID: False in MovementInfo.setDest(...)");
-            return false;
+            ((GUIMovableComponent) guiComponent).getMovementComponent().setDest(destX, destY);
         }
-        else {
-            destId = "";
-            return true;
-        }
+        else
+            destId = null;
     }
 
+    public Label getLabel() { return ((GUIMovableComponent) guiComponent).getLabel(); }
+
+    public void setLabelVisible(boolean labelVisible) { ((GUIMovableComponent) guiComponent).setVisibleLabel(labelVisible); }
+
+    public void setVisibleOnJunction(boolean visibleOnJunction) { ((GUIMovableComponent) guiComponent).setVisibleShape(visibleOnJunction); }
+
     public void update() {
-        setX(movementInfo.getX());
-        setY(movementInfo.getY());
-        //shape.setVisible(currState == State.MOVING);
+        ((GUIMovableComponent) guiComponent).update(null, currState == State.MOVING);
     }
 
     protected abstract void moveActions();
@@ -115,17 +102,17 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     public synchronized void move() {
         switch (currState) {
             case MOVING -> {
-                if (movementInfo.arrived()) {
-                    if (Database.getAppObjects().get(destId).objectType == Database.ObjectType.AP)
+                if (((GUIMovableComponent) guiComponent).getMovementComponent().arrived()) {
+                    if (Database.getAppObjects().get(destId).getId().startsWith("AP"))
                         currState = State.WAITING_AIRPORT;
-                    else if (Database.getAppObjects().get(destId).objectType == Database.ObjectType.JU)
+                    else if (Database.getAppObjects().get(destId).getId().startsWith("JU"))
                         currState = State.WAITING_JUNCTION;
                     if (currTrackUsed != null)
                         if (!((Track) Database.getAppObjects().get(currTrackUsed)).removeUsing(getId()))
                             System.out.println("Track " + currTrackUsed + " doesn't contain vehicle with this id " + getId());
                 }
                 else {
-                    movementInfo.move();
+                    ((GUIMovableComponent) guiComponent).getMovementComponent().move();
                     moveActions();
                 }
             }
@@ -140,14 +127,15 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
             case JUNCTION -> {
                 if (((Junction) Database.getAppObjects().get(destId)).removeUsing(getId())) {
                     currState = State.WAITING_TRACK;
-                    if (setNewDestID()) generateNewRoute();
+                    setNewDestID();
+                    if (destId == null) generateNewRoute();
                 }
                 else
                     System.out.println("Removing from junction error");
             }
             case AIRPORT -> airportActions();
             case WAITING_TRACK -> {
-                currTrackUsed = ((Junction) Database.getAppObjects().get(destId)).getTrack(movementInfo.getHeading(), true);
+                currTrackUsed = ((Junction) Database.getAppObjects().get(destId)).getTrack(((GUIMovableComponent) guiComponent).getMovementComponent().getHeading(), true);
                 if (currTrackUsed != null) {
                     Track track = (Track) Database.getAppObjects().get(currTrackUsed);
                     if (track.getDirection() == 2) {
@@ -179,7 +167,7 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
                 }
                 else
                     System.out.println("MovingObject.move: Error in retrieving trackId, destId=" + destId +
-                            ", heading=" + movementInfo.getHeading() + ", invertHeading=" + true +
+                            ", heading=" + ((GUIMovableComponent) guiComponent).getMovementComponent().getHeading() + ", invertHeading=" + true +
                             ", tracks=" + ((Junction) Database.getAppObjects().get(destId)).getTracks());
             }
         }
@@ -224,8 +212,8 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     public String toString() {
         return  super.toString() +
                 String.format("  state: %s\n", currState) +
-                String.format("  speed: %.2f\n", movementInfo.getSpeed()) +
-                String.format("  heading: %s\n", movementInfo.getHeading()) +
+                String.format("  speed: %.2f\n", ((GUIMovableComponent) guiComponent).getMovementComponent().getSpeed()) +
+                String.format("  heading: %s\n", ((GUIMovableComponent) guiComponent).getMovementComponent().getHeading()) +
                 String.format("  route: %s\n", destRoute) +
                 String.format("  destId: %s\n", destId);
     }
@@ -233,8 +221,8 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
         objectInfos.add(new TableCellComponent("state", currState.toString()));
-        objectInfos.add(new TableCellComponent("speed", Double.toString(movementInfo.getSpeed())));
-        objectInfos.add(new TableCellComponent("heading", movementInfo.getHeading().toString()));
+        objectInfos.add(new TableCellComponent("speed", Double.toString(((GUIMovableComponent) guiComponent).getMovementComponent().getSpeed())));
+        objectInfos.add(new TableCellComponent("heading", ((GUIMovableComponent) guiComponent).getMovementComponent().getHeading().toString()));
         objectInfos.add(new TableCellComponent("route", destRoute.toString()));
         objectInfos.add(new TableCellComponent("destId", destId));
         return objectInfos;

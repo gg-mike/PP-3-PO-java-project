@@ -1,75 +1,49 @@
-package obj.network;
+package object.network;
 
 import data.Database;
+import data.GUIComponent;
 import data.MovementComponent;
 import data.TableCellComponent;
 import javafx.collections.ObservableList;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import util.Utility;
 
 import java.util.ArrayList;
 
 public class Track extends NetworkObject {
     private int direction;
-    private double len = 0;
+    private final double len;
     private final String[] points;
 
     public Track(String data) {
         super(data);
-        if (Utility.StringInfo.getX() == 0 || Utility.StringInfo.getX() == 500)
-            direction = 0;
-        else
-            direction = 2;
+        direction = (Utility.StringInfo.getX() == 0 || Utility.StringInfo.getX() == 500) ? 0 : 2;
         ArrayList<Object> objects = Utility.JSONInfo.getArray("points");
         points = new String[]{(String) objects.get(0), (String) objects.get(1)};
-        Line line = new Line();
-        line.setId(shape.getId());
-        line.setUserData(shape.getUserData());
-        line.setStrokeWidth((direction == 2)? 4 : 2);
-        if (setPointsCoord(line)) {
-            setPointsCoord(line);
-            shape = line;
-            if (assignment == Database.ObjectAssignment.AIR)
-                shape.strokeProperty().set(Color.valueOf("#fa6a0a"));
-            else
-                shape.strokeProperty().set(Color.valueOf("#249fde"));
-            len = Utility.Math.distance(getStartX(), getStartY(), getEndX(), getEndY());
-        }
-        else
-            System.out.println("Does not exists: " + points[0] + ", " + points[1]);
+        guiComponent = new GUIComponent(Utility.StringInfo.getId(), getPointsCoord());
+        addTracksToJunctions();
+        len = Utility.Math.distance(getStartX(), getStartY(), getEndX(), getEndY());
     }
 
-    public int getDirection() {
-        return direction;
-    }
+    public int getDirection() { return direction; }
 
-    public void setDirection(int direction) {
-        this.direction = direction;
-        shape.setStrokeWidth((direction == 2)? 4 : 2);
-    }
+    public void setDirection(int direction) { this.direction = direction; }
 
-    public String[] getPoints() {
-        return points;
-    }
+    public String[] getPoints() { return points; }
 
-    private boolean setPointsCoord(Line line) {
+    private Double[] getPointsCoord() {
         if ((Database.getJunctions().contains(points[0]) || Database.getAirports().contains(points[0])) &&
                 (Database.getJunctions().contains(points[1]) || Database.getAirports().contains(points[1]))) {
-            line.setStartX(Database.getAppObjects().get(points[0]).getX());
-            line.setStartY(Database.getAppObjects().get(points[0]).getY());
-            line.setEndX(Database.getAppObjects().get(points[1]).getX());
-            line.setEndY(Database.getAppObjects().get(points[1]).getY());
-            addTracksToJunctions(line);
-            return true;
+            return new Double[]{
+                    Database.getAppObjects().get(points[0]).getX(), Database.getAppObjects().get(points[0]).getY(),
+                    Database.getAppObjects().get(points[1]).getX(), Database.getAppObjects().get(points[1]).getY() };
         }
         else
-            return false;
+            return null;
     }
 
-    private void addTracksToJunctions(Line line) {
-        double diffX = line.getStartX() - line.getEndX();
-        double diffY = line.getStartY() - line.getEndY();
+    private void addTracksToJunctions() {
+        double diffX = getStartX() - getEndX();
+        double diffY = getStartY() - getEndY();
         if (diffX == 0 && diffY < 0) {
             ((Junction) Database.getAppObjects().get(points[0])).addTrack(MovementComponent.Heading.S, getId());
             ((Junction) Database.getAppObjects().get(points[1])).addTrack(MovementComponent.Heading.N, getId());
@@ -96,19 +70,15 @@ public class Track extends NetworkObject {
         return true;
     }
 
-    public double getStartX() { return ((Line) shape).getStartX(); }
-    public double getStartY() { return ((Line) shape).getStartY(); }
-    public double getEndX() { return ((Line) shape).getEndX(); }
-    public double getEndY() { return ((Line) shape).getEndY(); }
+    public double getStartX() { return guiComponent.getCoords()[0]; }
+    public double getEndX() { return guiComponent.getCoords()[1]; }
+    public double getStartY() { return guiComponent.getCoords()[2]; }
+    public double getEndY() { return guiComponent.getCoords()[3]; }
 
     @Deprecated public double getX() { return 0; }
     @Deprecated public double getY() { return 0; }
-    @Deprecated public void setX(double x) { }
-    @Deprecated public void setY(double y) { }
 
-    public double getLen() {
-        return len;
-    }
+    public double getLen() { return len; }
 
     @Override
     public String toString() {

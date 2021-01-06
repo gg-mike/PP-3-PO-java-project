@@ -1,9 +1,9 @@
-package obj.vehicle.aircraft;
+package object.vehicle.aircraft;
 
 import data.Database;
 import data.TableCellComponent;
 import javafx.collections.ObservableList;
-import obj.network.Airport;
+import object.network.Airport;
 import util.Utility;
 
 public final class CivilAircraft extends Aircraft {
@@ -33,7 +33,7 @@ public final class CivilAircraft extends Aircraft {
     protected void airportActions() {
         switch (airport_action) {
             case NONE -> {
-                if (objectType == Database.ObjectType.CA) airport_action = AIRPORT_ACTION.DEBOARDING;
+                if (getId().startsWith("CA")) airport_action = AIRPORT_ACTION.DEBOARDING;
             }
             case DEBOARDING -> {
                 if(deboarding()) airport_action = AIRPORT_ACTION.SET_PASS_NUM;
@@ -50,7 +50,8 @@ public final class CivilAircraft extends Aircraft {
                     if (((Airport) Database.getAppObjects().get(destId)).removeUsing(getId())) {
                         currState = State.WAITING_TRACK;
                         airport_action = AIRPORT_ACTION.NONE;
-                        if (setNewDestID()) generateNewRoute();
+                        setNewDestID();
+                        if(destId == null) generateNewRoute();
                     }
                     else
                         System.out.println("Removing from airport error");

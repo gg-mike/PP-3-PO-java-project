@@ -1,4 +1,4 @@
-package obj.vehicle.ship;
+package object.vehicle.ship;
 
 import data.TableCellComponent;
 import javafx.collections.ObservableList;
