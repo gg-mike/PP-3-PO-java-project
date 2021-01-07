@@ -8,7 +8,7 @@ public abstract class Ship extends MovingObject {
 
     @Override
     protected void airportActions() {
-        currState = State.MOVING;
+        state = State.MOVING;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package object.vehicle.aircraft;
 
+import data.Database;
 import data.TableCellComponent;
 import javafx.collections.ObservableList;
-import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 import object.base.MovingObject;
 import util.Utility;
@@ -10,7 +10,7 @@ import util.Utility;
 import java.util.ArrayList;
 
 public abstract class Aircraft extends MovingObject {
-    public enum AIRPORT_ACTION { NONE, DEBOARDING, SET_PASS_NUM, BOARDING, READY }
+    public enum AIRPORT_ACTION { NONE, EMERGENCY, REFUEL, DEBOARDING, SET_PASS_NUM, BOARDING, READY }
 
     protected int stuffN;
     protected Pair<Double, Double> fuelState;
@@ -41,8 +41,15 @@ public abstract class Aircraft extends MovingObject {
         }
     }
 
-    public void emergencyStop(MouseEvent event) {
-        // TODO: Looking for nearest airport and setting nextStopID to this
+    public void emergencyStop() {
+        initialMovementType = movementType;
+        initialMainRoute = mainRoute;
+        mainRoute = Database.getClosestAirport(destId, (getId().startsWith("CA")? 'C' : 'A'));
+        emergencyDestId = mainRoute.getLast();
+        intermediateRoute = mainRoute;
+        intermediateRoute.removeFirst();
+        movementType = MovementType.EMERGENCY;
+        airport_action = AIRPORT_ACTION.EMERGENCY;
     }
 
     @Override

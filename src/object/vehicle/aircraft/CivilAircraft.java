@@ -9,8 +9,9 @@ import util.Utility;
 public final class CivilAircraft extends Aircraft {
     private final int maxPassengerN;
     private int currPassengerN;
-    private final int delta = 20;
+    private final int delta = 50 / fps;
     private int endN = 0;
+    private boolean isFullStopIntermediateAirports = false;
 
     public CivilAircraft(String data) {
         super(data);
@@ -31,34 +32,41 @@ public final class CivilAircraft extends Aircraft {
 
     @Override
     protected void airportActions() {
+        if (airport_action == AIRPORT_ACTION.NONE && !(isFullStopIntermediateAirports || isMainRouteStop()))
+            airport_action = AIRPORT_ACTION.REFUEL;
         switch (airport_action) {
-            case NONE -> {
-                if (getId().startsWith("CA")) airport_action = AIRPORT_ACTION.DEBOARDING;
+            case NONE -> airport_action = AIRPORT_ACTION.DEBOARDING;
+            case EMERGENCY -> {
+                if (deboarding()) airport_action = AIRPORT_ACTION.REFUEL;
+            }
+            case REFUEL -> {
+                if (refuel(20d / fps)) airport_action = AIRPORT_ACTION.READY;
             }
             case DEBOARDING -> {
-                if(deboarding()) airport_action = AIRPORT_ACTION.SET_PASS_NUM;
+                if (deboarding()) airport_action = AIRPORT_ACTION.SET_PASS_NUM;
             }
             case SET_PASS_NUM -> {
                 endN = Utility.Math.randInt(maxPassengerN / 4, maxPassengerN);
                 airport_action = AIRPORT_ACTION.BOARDING;
             }
             case BOARDING -> {
-                if(boarding()) airport_action = AIRPORT_ACTION.READY;
+                if (boarding()) airport_action = AIRPORT_ACTION.REFUEL;
             }
             case READY -> {
-                if (refuel(20)) {
-                    if (((Airport) Database.getAppObjects().get(destId)).removeUsing(getId())) {
-                        currState = State.WAITING_TRACK;
-                        airport_action = AIRPORT_ACTION.NONE;
-                        setNewDestID();
-                        if(destId == null) generateNewRoute();
-                    }
-                    else
-                        System.out.println("Removing from airport error");
-                }
+                if (((Airport) Database.getAppObjects().get(destId)).removeUsing(getId())) {
+                    state = State.WAITING_TRACK;
+                    airport_action = AIRPORT_ACTION.NONE;
+                    setNewDestID();
+                    if (destId == null) generateNewRoute();
+                } else
+                    System.out.println("Removing from airport error");
             }
         }
-        refuel(20);
+        refuel(20d / fps);
+    }
+
+    public void setFullStopIntermediateAirports(boolean fullStopIntermediateAirports) {
+        isFullStopIntermediateAirports = fullStopIntermediateAirports;
     }
 
     @Override

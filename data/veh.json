@@ -2,7 +2,7 @@
   "aircrafts" : [
     {
       "id": "CA-0001", "speed": 50, "stuffN": 5, "maxPassengerN": 100, "fuelState": [200, 200],
-      "route": ["APC0207", "APC0607", "APC0909"], "movementType": "THERE_AND_BACK"
+      "route": ["APC0207", "APC0909"], "movementType": "THERE_AND_BACK"
     },
     {
       "id": "CA-0002", "speed": 45, "stuffN": 10, "maxPassengerN": 300, "fuelState": [400, 400],
@@ -10,7 +10,7 @@
     },
     {
       "id": "MA-0001", "speed": 60, "stuffN": 5, "weaponType": "Rockets", "fuelState": [200, 200],
-      "route": ["APC0909", "APC0607", "APC0207"], "movementType": "THERE_AND_BACK"
+      "route": ["APM0302", "APM0406", "APM1008", "APM1003"], "movementType": "CIRCLES"
     }
   ],
   "ships" : [

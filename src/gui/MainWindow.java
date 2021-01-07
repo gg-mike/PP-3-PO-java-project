@@ -4,10 +4,10 @@ import data.Database;
 import data.TableCellComponent;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
@@ -17,18 +17,19 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import object.base.MovingObject;
 import object.vehicle.aircraft.Aircraft;
+import object.vehicle.aircraft.CivilAircraft;
 import object.vehicle.ship.AircraftCarrier;
 import util.Utility;
 
 public class MainWindow {
 
-    public Button initButton, resetButton, startStopButton, objectButton1, objectButton2, resetMapButton;
+    public Button databaseContentButton, startStopButton, objectButton1, objectButton2, resetMapButton;
     public Group objectsGroup;
     public Label nameLabel;
     public Pane map;
     public ScrollPane infoTabScrollPane;
     public Tab mapTab, infoTab;
-    public CheckBox idLabelsCheckbox, objectsOnJunctionsCheckbox;
+    public CheckMenuItem displayLabelCheckbox, displayVehicleAtJunctionsCheckbox, displayVehicleWaitingAtJunctionsCheckbox, simulationFullStopCheckbox;
     private AnimationTimer tableRefresher;
     private String objectChosenId;
     public TableView<TableCellComponent> objectDataTable;
@@ -38,14 +39,24 @@ public class MainWindow {
     public VBox objectDataVBox;
     private double mouseInitPosX = 0, mouseInitPosY = 0, scaleFactor = 1.0;
 
-    public void init() {
+    public void databaseContentController() {
+        if (Database.isInit()) {
+            reset();
+            databaseContentButton.setText("Init Database");
+        }
+        else {
+            init();
+            databaseContentButton.setText("Reset Database");
+        }
+    }
+
+    private void init() {
         Database.init(new String[]{"./data/net.json", "./data/veh.json"}, new String[][] {
                 {"junctions", "airports", "tracks"},
                 {"aircrafts", "ships"}});
         objectsGroup = new Group();
         initNodes();
         map.getChildren().add(objectsGroup);
-        initButton.setDisable(true);
         startStopButton.setDisable(false);
         tableRefresher = new AnimationTimer() {
             @Override
@@ -64,19 +75,22 @@ public class MainWindow {
         }
     }
 
-    public void reset() {
-        tableRefresher.stop();
-        Database.clear();
-        objectsGroup.getChildren().clear();
-        initButton.setDisable(false);
-        startStopButton.setDisable(true);
-        infoTabScrollPane.setContent(new Text(""));
-        map.getTransforms().clear();
+    private void reset() {
+        if (Database.isInit()) {
+            tableRefresher.stop();
+            Database.clear();
+            objectsGroup.getChildren().clear();
+            startStopButton.setDisable(true);
+            infoTabScrollPane.setContent(new Text(""));
+            map.getTransforms().clear();
+        }
+        displayLabelCheckbox.setSelected(true);
+        displayVehicleAtJunctionsCheckbox.setSelected(false);
+        displayVehicleWaitingAtJunctionsCheckbox.setSelected(false);
+        simulationFullStopCheckbox.setSelected(true);
     }
 
-    public void startStop() {
-        Database.startStopThreads();
-    }
+    public void startStop() { Database.startStopThreads(); }
 
     public void objectChosen(MouseEvent event) {
         if (Database.isInit()) {
@@ -89,7 +103,7 @@ public class MainWindow {
                     objectButtonSet(objectButton1, ((Node)event.getSource()).getId(), "Delete",
                             true, false, this::removeObject);
                     objectButtonSet(objectButton2, ((Node)event.getSource()).getId(), "Force Emergency Stop",
-                            true, false, ((Aircraft) Database.getAppObjects().get(((Node)event.getSource()).getId()))::emergencyStop);
+                            true, false, event1 -> ((Aircraft) Database.getAppObjects().get(((Node) event.getSource()).getId())).emergencyStop());
                 }
                 case AC -> {
                     objectButtonSet(objectButton1, ((Node)event.getSource()).getId(), "Delete",
@@ -111,16 +125,28 @@ public class MainWindow {
         }
     }
 
-    public void idLabelsController(ActionEvent actionEvent) {
+    public void displayLabelController() {
         for (String id : Database.getAppObjects().keySet())
             if (Database.getAppObjects().get(id) instanceof MovingObject)
-                ((MovingObject) Database.getAppObjects().get(id)).setLabelVisible(idLabelsCheckbox.isSelected());
+                ((MovingObject) Database.getAppObjects().get(id)).setLabelVisible(displayLabelCheckbox.isSelected());
     }
 
-    public void objectsOnJunctionsController(ActionEvent actionEvent) {
+    public void displayVehicleAtJunctionsController() {
         for (String id : Database.getAppObjects().keySet())
             if (Database.getAppObjects().get(id) instanceof MovingObject)
-                ((MovingObject) Database.getAppObjects().get(id)).setVisibleOnJunction(objectsOnJunctionsCheckbox.isSelected());
+                ((MovingObject) Database.getAppObjects().get(id)).setVisibleAtJunction(displayVehicleAtJunctionsCheckbox.isSelected());
+    }
+
+    public void displayVehicleWaitingAtJunctionsController() {
+        for (String id : Database.getAppObjects().keySet())
+            if (Database.getAppObjects().get(id) instanceof MovingObject)
+                ((MovingObject) Database.getAppObjects().get(id)).setVisibleWaitingAtJunction(displayVehicleWaitingAtJunctionsCheckbox.isSelected());
+    }
+
+    public void simulationFullStopController() {
+        for (String id : Database.getAircrafts())
+            if (Database.getAppObjects().get(id) instanceof CivilAircraft)
+                ((CivilAircraft) Database.getAppObjects().get(id)).setFullStopIntermediateAirports(simulationFullStopCheckbox.isSelected());
     }
 
     private void objectButtonSet(Button objButton, String id, String text, boolean isVisible, boolean isDisable,
@@ -182,6 +208,5 @@ public class MainWindow {
         mouseInitPosX = dragEvent.getX();
         mouseInitPosY = dragEvent.getY();
     }
-
 }
 

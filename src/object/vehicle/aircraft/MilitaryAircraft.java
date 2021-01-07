@@ -22,21 +22,21 @@ public final class MilitaryAircraft extends Aircraft {
     @Override
     protected void airportActions() {
         switch (airport_action) {
-            case NONE, DEBOARDING, SET_PASS_NUM, BOARDING -> airport_action = AIRPORT_ACTION.READY;
+            case NONE, EMERGENCY, DEBOARDING, SET_PASS_NUM, BOARDING -> airport_action = AIRPORT_ACTION.REFUEL;
+            case REFUEL -> {
+                if (refuel(20d / fps)) airport_action = AIRPORT_ACTION.READY;
+            }
             case READY -> {
-                if (refuel(20)) {
-                    if (((Airport) Database.getAppObjects().get(destId)).removeUsing(getId())) {
-                        currState = State.WAITING_TRACK;
-                        airport_action = AIRPORT_ACTION.NONE;
-                        setNewDestID();
-                        if(destId == null) generateNewRoute();
-                    }
-                    else
-                        System.out.println("Removing from airport error");
-                }
+                if (((Airport) Database.getAppObjects().get(destId)).removeUsing(getId())) {
+                    state = State.WAITING_TRACK;
+                    airport_action = AIRPORT_ACTION.NONE;
+                    setNewDestID();
+                    if (destId == null) generateNewRoute();
+                } else
+                    System.out.println("Removing from airport error");
             }
         }
-        refuel(20);
+        refuel(20d / fps);
     }
 
     @Override

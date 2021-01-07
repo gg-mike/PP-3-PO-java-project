@@ -32,19 +32,19 @@
     { "id": "JUW1106" }
   ],
   "airports": [
-    { "id": "APC0207", "name": "Civil Airport 1", "capacity":  8 },
-    { "id": "APC0305", "name": "Civil Airport 2", "capacity": 15 },
-    { "id": "APC0408", "name": "Civil Airport 3", "capacity": 12 },
-    { "id": "APC0503", "name": "Civil Airport 4", "capacity": 10 },
-    { "id": "APC0607", "name": "Civil Airport 5", "capacity": 12 },
-    { "id": "APC0704", "name": "Civil Airport 6", "capacity":  8 },
-    { "id": "APC0802", "name": "Civil Airport 7", "capacity":  5 },
-    { "id": "APC0909", "name": "Civil Airport 8", "capacity": 10 },
+    { "id": "APC0207", "name": "Civil Airport 1", "capacity": 3 },
+    { "id": "APC0305", "name": "Civil Airport 2", "capacity": 4 },
+    { "id": "APC0408", "name": "Civil Airport 3", "capacity": 3 },
+    { "id": "APC0503", "name": "Civil Airport 4", "capacity": 2 },
+    { "id": "APC0607", "name": "Civil Airport 5", "capacity": 5 },
+    { "id": "APC0704", "name": "Civil Airport 6", "capacity": 3 },
+    { "id": "APC0802", "name": "Civil Airport 7", "capacity": 5 },
+    { "id": "APC0909", "name": "Civil Airport 8", "capacity": 2 },
     
-    { "id": "APM0302", "name": "Military Airport 1", "capacity":  5 },
-    { "id": "APM0406", "name": "Military Airport 2", "capacity": 10 },
-    { "id": "APM1003", "name": "Military Airport 3", "capacity":  8 },
-    { "id": "APM1008", "name": "Military Airport 4", "capacity":  5 }
+    { "id": "APM0302", "name": "Military Airport 1", "capacity": 5 },
+    { "id": "APM0406", "name": "Military Airport 2", "capacity": 2 },
+    { "id": "APM1003", "name": "Military Airport 3", "capacity": 3 },
+    { "id": "APM1008", "name": "Military Airport 4", "capacity": 2 }
   ],
   "tracks": [
     { "id": "TRA0001", "points": ["JUA0206", "JUA0306"] },

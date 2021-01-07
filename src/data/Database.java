@@ -26,8 +26,7 @@ public class Database {
     private static final HashSet<String> tracks = new HashSet<>();
     private static final HashSet<String> airports = new HashSet<>();
     private static final ArrayList<String> ids = new ArrayList<>();
-    private static Graph airGraph;
-    private static Graph waterGraph;
+    private static Graph airGraph, waterGraph;
     public static boolean isInit = false;
 
 
@@ -49,11 +48,12 @@ public class Database {
             }
         }
         isInit = true;
+
         airGraph = new Graph(airports, junctions, 'A');
         waterGraph = new Graph(airports, junctions, 'W');
         for (String id : appObjects.keySet())
             if (appObjects.get(id) instanceof MovingObject)
-                ((MovingObject) appObjects.get(id)).initRoute();
+                ((MovingObject) appObjects.get(id)).initRoute(true);
         ids.addAll(tracks);
         ids.addAll(junctions);
         ids.addAll(airports);
@@ -170,60 +170,22 @@ public class Database {
         isInit = false;
     }
 
-    private static Double getTracksWeight(String p1, String p2) {
+    public static LinkedList<String> createRoute(String startId, String endId, char assignment) {
+        if (assignment == 'A') return airGraph.createRoute(startId, endId);
+        else return waterGraph.createRoute(startId, endId);
+    }
+
+    public static LinkedList<String> getClosestAirport(String startId, char assignment) {
+        return airGraph.getClosestAirport(startId, assignment);
+    }
+
+    public static Double getTracksWeight(String p1, String p2) {
         for (String trackId : tracks) {
             String[] points = ((Track) appObjects.get(trackId)).getPoints();
             if ((points[0].equals(p1) && points[1].equals(p2)) || (points[1].equals(p1) && points[0].equals(p2)))
                 return ((Track) appObjects.get(trackId)).getLen();
         }
         return null;
-    }
-
-    public static LinkedList<String> createRoute(String startId, String endId, char assignment) {
-        Graph graph;
-        if (assignment == 'A') graph = airGraph;
-        else graph = waterGraph;
-        LinkedList<String> route = new LinkedList<>();
-
-        HashMap<String, String> con = new HashMap<>();
-        for (String nodeId : graph.getNodes().keySet())
-            con.put(nodeId, null);
-        HashSet<String> visited = new HashSet<>();
-        LinkedList<String> points = new LinkedList<>();
-        points.add(startId);
-        graph.resetNodes();
-        graph.getNodes().get(startId).currWeight = 0d;
-
-        while (!points.isEmpty()) {
-            String p = points.remove();
-
-            for (String c : graph.getNodes().get(p).connections) {
-                Double cw = getTracksWeight(p, c);
-                if (cw == null)
-                    System.out.println("Database.createRoute: track between " + p + " and " + c + " not found");
-                else {
-                    double w = graph.getNodes().get(p).currWeight + cw;
-                    if (graph.getNodes().get(c).currWeight > w) {
-                        graph.getNodes().get(c).currWeight = w;
-                        con.put(c, p);
-                    }
-                    if (!visited.contains(c)) {
-                        points.add(c);
-                        visited.add(c);
-                    }
-                }
-            }
-        }
-
-        if (con.get(endId) != null) {
-            String id = endId;
-            while (id != null) {
-                route.add(id);
-                id = con.get(id);
-            }
-            Collections.reverse(route);
-        }
-        return route;
     }
 
     public static HashMap<String, AppObject> getAppObjects() { return appObjects; }
