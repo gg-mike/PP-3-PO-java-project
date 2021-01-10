@@ -8,6 +8,7 @@ import object.vehicle.aircraft.*;
 import object.vehicle.ship.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.Utility;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +26,6 @@ public class Database {
     private static final HashSet<String> junctions = new HashSet<>();
     private static final HashSet<String> tracks = new HashSet<>();
     private static final HashSet<String> airports = new HashSet<>();
-    private static final ArrayList<String> ids = new ArrayList<>();
     private static Graph airGraph, waterGraph;
     public static boolean isInit = false;
 
@@ -54,48 +54,50 @@ public class Database {
         for (String id : appObjects.keySet())
             if (appObjects.get(id) instanceof MovingObject)
                 ((MovingObject) appObjects.get(id)).initRoute(true);
-        ids.addAll(tracks);
-        ids.addAll(junctions);
-        ids.addAll(airports);
-        ids.addAll(ships);
-        ids.addAll(aircrafts);
         createThreads();
     }
 
     private static void initAppObjects(JSONArray contents) {
-        for (int i = 0; i < contents.length(); i++) {
-            JSONObject obj = contents.getJSONObject(i);
-            switch (ObjectType.valueOf(obj.getString("id").substring(0, 2))) {
-                case AP -> {
-                    appObjects.put(obj.getString("id"), new Airport(obj.toString()));
-                    airports.add(obj.getString("id"));
-                }
-                case JU -> {
-                    appObjects.put(obj.getString("id"), new Junction(obj.toString()));
-                    junctions.add(obj.getString("id"));
-                }
-                case TR -> {
-                    appObjects.put(obj.getString("id"), new Track(obj.toString()));
-                    tracks.add(obj.getString("id"));
-                }
-                case CA -> {
-                    appObjects.put(obj.getString("id"), new CivilAircraft(obj.toString()));
-                    aircrafts.add(obj.getString("id"));
-                }
-                case MA -> {
-                    appObjects.put(obj.getString("id"), new MilitaryAircraft(obj.toString()));
-                    aircrafts.add(obj.getString("id"));
-                }
-                case CS -> {
-                    appObjects.put(obj.getString("id"), new CruiseShip(obj.toString()));
-                    ships.add(obj.getString("id"));
-                }
-                case AC -> {
-                    appObjects.put(obj.getString("id"), new AircraftCarrier(obj.toString()));
-                    ships.add(obj.getString("id"));
-                }
-                default -> System.out.println("Wrong Type: " + obj.getString("id"));
+        for (int i = 0; i < contents.length(); i++)
+            initAppObject(contents.getJSONObject(i), true);
+    }
+
+    public static void initAppObject(JSONObject obj, boolean isStartUp) {
+        switch (ObjectType.valueOf(obj.getString("id").substring(0, 2))) {
+            case AP -> {
+                appObjects.put(obj.getString("id"), new Airport(obj.toString()));
+                airports.add(obj.getString("id"));
             }
+            case JU -> {
+                appObjects.put(obj.getString("id"), new Junction(obj.toString()));
+                junctions.add(obj.getString("id"));
+            }
+            case TR -> {
+                appObjects.put(obj.getString("id"), new Track(obj.toString()));
+                tracks.add(obj.getString("id"));
+            }
+            case CA -> {
+                appObjects.put(obj.getString("id"), new CivilAircraft(obj.toString()));
+                aircrafts.add(obj.getString("id"));
+            }
+            case MA -> {
+                appObjects.put(obj.getString("id"), new MilitaryAircraft(obj.toString()));
+                aircrafts.add(obj.getString("id"));
+            }
+            case CS -> {
+                appObjects.put(obj.getString("id"), new CruiseShip(obj.toString()));
+                ships.add(obj.getString("id"));
+            }
+            case AC -> {
+                appObjects.put(obj.getString("id"), new AircraftCarrier(obj.toString()));
+                ships.add(obj.getString("id"));
+            }
+            default -> System.out.println("Wrong Type: " + obj.getString("id"));
+        }
+        if (!isStartUp) {
+            ((MovingObject) Database.getAppObjects().get(obj.getString("id"))).initRoute(true);
+            threads.put(obj.getString("id"), new Thread((Runnable) appObjects.get(obj.getString("id"))));
+            threads.get(obj.getString("id")).start();
         }
     }
 
@@ -116,9 +118,19 @@ public class Database {
         animationTimer.start();
     }
 
-    public static void startStopThreads() {
+    public static void startThreads() {
         for (String threadKey: threads.keySet())
-            ((MovingObject) appObjects.get(threadKey)).startStop();
+            ((MovingObject) appObjects.get(threadKey)).start();
+    }
+
+    public static void switchRunningThreads() {
+        for (String threadKey: threads.keySet())
+            ((MovingObject) appObjects.get(threadKey)).switchRunning();
+    }
+
+    public static void stopThreads() {
+        for (String threadKey: threads.keySet())
+            ((MovingObject) appObjects.get(threadKey)).stop();
     }
 
     /**
@@ -166,7 +178,6 @@ public class Database {
         junctions.clear();
         tracks.clear();
         airports.clear();
-        ids.clear();
         isInit = false;
     }
 
@@ -200,15 +211,17 @@ public class Database {
 
     public static HashSet<String> getAirports() { return airports; }
 
-    public static ArrayList<String> getIds() { return ids; }
+    public static String getNetworkObject(int x, int y) {
+        String pointCoord = Utility.Math.intToString(x / 50, 2) + Utility.Math.intToString(y / 50, 2);
+        for (String junction: junctions) {
+            if (junction.contains(pointCoord)) return junction;
+        }
+        for (String airport: airports) {
+            if (airport.contains(pointCoord)) return airport;
+        }
+        return null;
+    }
 
     public static boolean isInit() { return isInit; }
 
-    public static String toStringStatic() {
-        StringBuilder text = new StringBuilder();
-        for (String key: appObjects.keySet()) {
-            text.append(appObjects.get(key).toString());
-        }
-        return text.toString();
-    }
 }

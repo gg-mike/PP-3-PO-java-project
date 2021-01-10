@@ -1,4 +1,4 @@
-package data;
+package component;
 
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;

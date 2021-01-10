@@ -1,5 +1,6 @@
-package data;
+package component;
 
+import data.Database;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -131,86 +132,94 @@ public class GUIComponent {
      * @param coords coordinates for the shape (4 for LINE [x1, y1, x2, y2], 2 for overs [x, y])
      */
     public void init(String id, Double... coords) {
+        shape = getShapeBase(id, coords);
+        if (shape instanceof Circle) shapeType = ShapeType.CIRCLE;
+        else if (shape instanceof Line) shapeType = ShapeType.LINE;
+        else shapeType = ShapeType.POLYGON;
+    }
+
+    // FUNCTIONALITY
+
+    public static Shape getShapeBase(String id, Double... coords) {
         Color fill = null, stroke = null;
         Double size = null;
         Double[] points = null;
+        ShapeType shapeTypeBase = null;
+        Shape shapeBase = null;
         switch(Database.ObjectType.valueOf(id.substring(0, 2))) {
             case AP -> {
-                shapeType = ShapeType.CIRCLE;
+                shapeTypeBase = ShapeType.CIRCLE;
                 fill = Color.valueOf("#b4202a");
                 if (id.charAt(2) == 'M') stroke = Color.BLACK;
                 size = 10d;
             }
             case JU -> {
-                shapeType = ShapeType.CIRCLE;
+                shapeTypeBase = ShapeType.CIRCLE;
                 fill = Color.valueOf("#9cdb43");
                 size = 8d;
             }
             case TR -> {
-                shapeType = ShapeType.LINE;
+                shapeTypeBase = ShapeType.LINE;
                 stroke = Color.valueOf((id.charAt(2) == 'A') ? "#fa6a0a" : "#249fde");
                 size = (id.charAt(4) == '2')? 4d : 2d;
             }
             case CA -> {
-                shapeType = ShapeType.POLYGON;
+                shapeTypeBase = ShapeType.POLYGON;
                 stroke = Color.BLACK;
                 points = GUIPolygon.civilAirplane;
             }
             case MA -> {
-                shapeType = ShapeType.POLYGON;
+                shapeTypeBase = ShapeType.POLYGON;
                 stroke = Color.BLACK;
                 points = GUIPolygon.militaryAirplane;
             }
             case CS -> {
-                shapeType = ShapeType.POLYGON;
+                shapeTypeBase = ShapeType.POLYGON;
                 stroke = Color.BLACK;
                 points = GUIPolygon.cruiseShip;
             }
             case AC -> {
-                shapeType = ShapeType.POLYGON;
+                shapeTypeBase = ShapeType.POLYGON;
                 stroke = Color.BLACK;
                 points = GUIPolygon.aircraftCarrier;
             }
         }
 
-        switch (shapeType) {
+        switch (shapeTypeBase) {
             case LINE -> {
-                shape = new Line();
-                ((Line) shape).setStartX(coords[0]);
-                ((Line) shape).setStartY(coords[1]);
-                ((Line) shape).setEndX(coords[2]);
-                ((Line) shape).setEndY(coords[3]);
-                shape.setStroke(stroke);
-                shape.setStrokeWidth(size);
+                shapeBase = new Line();
+                ((Line) shapeBase).setStartX(coords[0]);
+                ((Line) shapeBase).setStartY(coords[1]);
+                ((Line) shapeBase).setEndX(coords[2]);
+                ((Line) shapeBase).setEndY(coords[3]);
+                shapeBase.setStroke(stroke);
+                shapeBase.setStrokeWidth(size);
             }
             case CIRCLE -> {
-                shape = new Circle();
-                ((Circle) shape).setCenterX(coords[0]);
-                ((Circle) shape).setCenterY(coords[1]);
-                ((Circle) shape).setRadius(size);
-                shape.setFill(fill);
+                shapeBase = new Circle();
+                ((Circle) shapeBase).setCenterX(coords[0]);
+                ((Circle) shapeBase).setCenterY(coords[1]);
+                ((Circle) shapeBase).setRadius(size);
+                shapeBase.setFill(fill);
                 if (stroke != null) {
-                    shape.setStroke(stroke);
-                    shape.setStrokeWidth(2);
+                    shapeBase.setStroke(stroke);
+                    shapeBase.setStrokeWidth(2);
                 }
             }
             case POLYGON -> {
-                shape = new Polygon();
-                ((Polygon) shape).getPoints().addAll(points);
-                shape.setLayoutX(coords[0]);
-                shape.setLayoutY(coords[1]);
-                shape.setScaleX(1.5);
-                shape.setScaleY(1.5);
-                shape.setStroke(stroke);
-                shape.setStrokeWidth(2);
+                shapeBase = new Polygon();
+                ((Polygon) shapeBase).getPoints().addAll(points);
+                shapeBase.setLayoutX(coords[0]);
+                shapeBase.setLayoutY(coords[1]);
+                shapeBase.setScaleX(1.5);
+                shapeBase.setScaleY(1.5);
             }
         }
 
-        shape.setId(id);
-        shape.setUserData(id);
+        shapeBase.setId(id);
+        shapeBase.setUserData(id);
+        return shapeBase;
     }
-
-    // FUNCTIONALITY
 
     /**
      * Update stroke color

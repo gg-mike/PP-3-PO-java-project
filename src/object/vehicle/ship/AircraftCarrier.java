@@ -1,6 +1,6 @@
 package object.vehicle.ship;
 
-import data.TableCellComponent;
+import component.TableCellComponent;
 import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
 import util.Utility;

@@ -1,4 +1,4 @@
-package data;
+package component;
 
 public class TableCellComponent {
     String param, value;

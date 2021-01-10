@@ -1,87 +1,194 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane minWidth="600.0" prefHeight="582.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainWindow">
-    <VBox prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <ToolBar minHeight="40.0" prefHeight="87.0" prefWidth="1000.0">
-            <Button fx:id="databaseContentButton" mnemonicParsing="false" onAction="#databaseContentController" prefHeight="40.0" prefWidth="100.0" text="Init Database" />
-         <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <Button fx:id="startStopButton" disable="true" mnemonicParsing="false" onAction="#startStop" prefHeight="40.0" prefWidth="40.0" text="⏯">
-            <font>
-               <Font size="16.0" />
-            </font></Button>
-         <Button fx:id="resetMapButton" mnemonicParsing="false" onAction="#resetMap" prefHeight="40.0" prefWidth="80.0" text="Reset Map" />
-         <Separator orientation="VERTICAL" prefHeight="200.0" />
-         <MenuButton mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Display" textAlignment="CENTER">
-           <items>
-               <CheckMenuItem fx:id="displayLabelCheckbox" mnemonicParsing="false" onAction="#displayLabelController" selected="true" text="Labels" />
-               <CheckMenuItem fx:id="displayVehicleAtJunctionsCheckbox" mnemonicParsing="false" onAction="#displayVehicleAtJunctionsController" text="Vehicles visible at junctions" />
-               <CheckMenuItem fx:id="displayVehicleWaitingAtJunctionsCheckbox" mnemonicParsing="false" onAction="#displayVehicleWaitingAtJunctionsController" text="Vehicles visible waiting at junctions" />
-           </items>
-         </MenuButton>
-         <MenuButton mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Simulation">
-           <items>
-               <CheckMenuItem fx:id="simulationFullStopCheckbox" mnemonicParsing="false" onAction="#simulationFullStopController" text="Full stop at airports" />
-           </items>
-         </MenuButton>
-        </ToolBar>
-        <HBox prefHeight="560.0" prefWidth="936.0">
-            <TabPane fx:id="mainTabPane" prefHeight="529.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" tabMaxWidth="50.0" tabMinWidth="50.0" HBox.hgrow="ALWAYS">
-                <Tab fx:id="mapTab" text="Map">
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="531.0" prefWidth="635.0">
-                        <Pane fx:id="map" onMouseDragged="#dragMap" onMousePressed="#startDragMap" onScroll="#zoomMap" prefHeight="500.0" prefWidth="600.0">
-                     <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#285cc4" height="500.0" stroke="BLACK" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="INSIDE" width="600.0" />
-                            <Polygon fill="#327814" points="125.0,  75.0, 175.0,  75.0, 225.0, 125.0, 375.0, 125.0, 375.0, 125.0, 375.0,  75.0, 425.0,  75.0, 475.0, 125.0, 525.0, 125.0, 525.0, 175.0, 425.0, 175.0, 425.0, 225.0, 325.0, 225.0, 275.0, 175.0, 175.0, 175.0, 125.0, 125.0" />
-                            <Polygon fill="#327814" points="125.0, 425.0, 325.0, 425.0, 325.0, 325.0, 275.0, 275.0, 225.0, 275.0, 175.0, 225.0, 125.0, 225.0,  75.0, 275.0,  75.0, 375.0" />
-                            <Polygon fill="#327814" points="425.0, 475.0, 525.0, 475.0, 525.0, 375.0, 475.0, 375.0, 425.0, 425.0" />
-                        </Pane>
-                    </AnchorPane>
-                </Tab>
-                <Tab fx:id="infoTab" text="Info">
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                        <ScrollPane fx:id="infoTabScrollPane" hbarPolicy="NEVER" prefHeight="534.0" prefWidth="475.0">
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-                        </ScrollPane>
-                    </AnchorPane>
-                </Tab>
-            </TabPane>
-            <VBox fx:id="objectDataVBox" disable="true" prefHeight="529.0" prefWidth="400.0" HBox.hgrow="NEVER">
-                <Label fx:id="nameLabel" minHeight="40.0" prefHeight="75.0" prefWidth="400.0" text="Name:">
-                    <VBox.margin>
-                        <Insets />
-                    </VBox.margin>
-                    <padding>
-                        <Insets left="10.0" />
-                    </padding>
-               <font>
-                  <Font size="20.0" />
-               </font>
+<GridPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainWindow">
+    <columnConstraints>
+        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="600.0" />
+        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" prefWidth="400" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints prefHeight="40.0" valignment="TOP" vgrow="NEVER" />
+        <RowConstraints prefHeight="540.0" valignment="BOTTOM" vgrow="ALWAYS" />
+    </rowConstraints>
+
+    <ToolBar prefHeight="40.0" GridPane.columnSpan="2">
+        <Button fx:id="toolbar_databaseContentButton" mnemonicParsing="false" onAction="#toolbar_databaseContentController" prefWidth="100.0" text="Init Database" />
+        <Separator orientation="VERTICAL" />
+        <Button fx:id="toolbar_switchRunningButton" disable="true" mnemonicParsing="false" onAction="#toolbar_switchRunningController" prefWidth="30.0" text="⏯" />
+        <Button fx:id="toolbar_resetButton" mnemonicParsing="false" onAction="#toolbar_resetMapController" prefWidth="100.0" text="Reset Map" />
+        <Separator orientation="VERTICAL" />
+        <MenuButton mnemonicParsing="false" prefWidth="100.0" text="Display" textAlignment="CENTER">
+            <items>
+                <CheckMenuItem fx:id="display_labelCheckbox" mnemonicParsing="false" onAction="#display_labelController" selected="true" text="Labels" />
+                <CheckMenuItem fx:id="display_vehicleAtJunctionsCheckbox" mnemonicParsing="false" onAction="#display_vehicleAtJunctionsController" text="Vehicles visible at junctions" />
+                <CheckMenuItem fx:id="display_vehicleWaitingAtJunctionsCheckbox" mnemonicParsing="false" onAction="#display_vehicleWaitingAtJunctionsController" text="Vehicles visible waiting at junctions" />
+            </items>
+        </MenuButton>
+        <MenuButton mnemonicParsing="false" prefWidth="100.0" text="Simulation">
+            <items>
+                <CheckMenuItem fx:id="simulation_fullStopCheckbox" mnemonicParsing="false" onAction="#simulation_fullStopController" text="Full stop at airports" />
+            </items>
+        </MenuButton>
+    </ToolBar>
+    
+    <TabPane tabClosingPolicy="UNAVAILABLE" tabMinWidth="50" GridPane.rowIndex="1">
+        <Tab text="Map">
+            <Pane style="-fx-background-color: #444444;">
+                <Group fx:id="map_group" layoutY="16.0" onMouseDragged="#map_dragController" onMousePressed="#map_startDragController" onScroll="#map_zoomController">
+                    <Rectangle fx:id="map_rect" arcHeight="5.0" arcWidth="5.0" fill="#285cc4" height="500.0" stroke="BLACK" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="INSIDE" width="600.0" />
+                    <Polygon fill="#327814" points="125.0, 75.0, 175.0, 75.0, 225.0, 125.0, 375.0, 125.0, 375.0, 125.0, 375.0,  75.0, 425.0,  75.0, 475.0, 125.0, 525.0, 125.0, 525.0, 175.0, 425.0, 175.0, 425.0, 225.0, 325.0, 225.0, 275.0, 175.0, 175.0, 175.0, 125.0, 125.0" />
+                    <Polygon fill="#327814" points="125.0, 425.0, 325.0, 425.0, 325.0, 325.0, 275.0, 275.0, 225.0, 275.0, 175.0, 225.0, 125.0, 225.0,  75.0, 275.0,  75.0, 375.0" />
+                    <Polygon fill="#327814" points="425.0, 475.0, 525.0, 475.0, 525.0, 375.0, 475.0, 375.0, 425.0, 425.0" />
+                </Group>
+            </Pane>
+        </Tab>
+        <Tab text="Help" />
+    </TabPane>
+    <TabPane tabClosingPolicy="UNAVAILABLE" tabMinWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Tab fx:id="info_Tab" disable="true" text="Info">
+            <GridPane hgap="10.0" prefHeight="504.0" prefWidth="399.0">
+                <columnConstraints>
+                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints prefHeight="100.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="40.0" vgrow="NEVER" />
+                    <RowConstraints vgrow="SOMETIMES" />
+                </rowConstraints>
+                <padding>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </padding>
+                <Label text="Name:">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
                 </Label>
-                <ToolBar minHeight="40.0" prefHeight="75.0" prefWidth="400.0">
-                    <Button fx:id="objectButton1" mnemonicParsing="false" prefHeight="45.0" text="Button1" visible="false" />
-               <Button fx:id="objectButton2" layoutX="10.0" layoutY="13.0" mnemonicParsing="false" prefHeight="45.0" text="Button2" visible="false" />
+                <Label fx:id="info_nameLabel" GridPane.columnIndex="1" GridPane.columnSpan="2">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+                <Pane fx:id="info_Pane" scaleShape="false" GridPane.columnIndex="3" />
+                <ToolBar prefHeight="33.0" prefWidth="389.0" GridPane.columnSpan="4" GridPane.rowIndex="1">
+                    <Button fx:id="info_option1Button" mnemonicParsing="false" text="Button1" visible="false" />
+                    <Button fx:id="info_option2Button" mnemonicParsing="false" text="Button2" visible="false" />
                 </ToolBar>
-            <TableView fx:id="objectDataTable" prefHeight="453.0" prefWidth="400.0" VBox.vgrow="NEVER">
+            <TableView fx:id="info_TableView" GridPane.columnSpan="4" GridPane.rowIndex="2">
               <columns>
-                <TableColumn fx:id="paramColumn" prefWidth="117.0" resizable="false" sortable="false" text="Parameter">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="param" />
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="valueColumn" prefWidth="282.0" resizable="false" sortable="false" text="Value">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="value" />
-                    </cellValueFactory>
-                </TableColumn>
+                  <TableColumn fx:id="info_paramTableColumn" editable="false" prefWidth="100.0" resizable="false" sortable="false" text="Parameter">
+                      <cellValueFactory>
+                          <PropertyValueFactory property="param" />
+                      </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn fx:id="info_valueTableColumn" editable="false" prefWidth="289.0" resizable="false" sortable="false" text="Value">
+                      <cellValueFactory>
+                          <PropertyValueFactory property="value" />
+                      </cellValueFactory>
+                  </TableColumn>
               </columns>
             </TableView>
-            </VBox>
-        </HBox>
-    </VBox>
-</AnchorPane>
+            </GridPane>
+        </Tab>
+        <Tab fx:id="add_Tab" disable="true" text="Add">
+            <GridPane alignment="TOP_CENTER" hgap="10.0">
+                <columnConstraints>
+                    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+
+                    <RowConstraints prefHeight="50.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="50.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="40.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="80.0" valignment="CENTER" vgrow="NEVER" />
+                    <RowConstraints prefHeight="50.0" valignment="CENTER" vgrow="NEVER" />
+                </rowConstraints>
+                <opaqueInsets><Insets /></opaqueInsets>
+
+                <Label alignment="CENTER" contentDisplay="CENTER" text="Vehicle type" />
+                <Label text="Route" GridPane.rowIndex="1" />
+                <Label text="Route type" GridPane.rowIndex="2" />
+                <Label text="Speed" GridPane.rowIndex="3" />
+                <Label fx:id="add_property1Label" text="Max fuel" GridPane.rowIndex="4" />
+                <Label fx:id="add_property2Label" text="Stuff number" GridPane.rowIndex="5" />
+                <Label fx:id="add_property3Label" text="Max passenger number" GridPane.rowIndex="6" />
+
+                <Label text="Vehicle id: " GridPane.rowIndex="9">
+                    <font>
+                        <Font size="18.0" />
+                    </font></Label>
+                <Label fx:id="add_idLabel" text="__-____" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9">
+                    <font>
+                        <Font size="18.0" />
+                    </font></Label>
+                <Label fx:id="add_jsonLabel" wrapText="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
+
+                <ComboBox fx:id="add_vehicleTypeComboBox" onAction="#add_vehicleTypeChangeController" prefWidth="150.0" GridPane.columnIndex="1" />
+                <Button fx:id="add_pickRouteButton" mnemonicParsing="false" onAction="#add_pickRouteController" prefWidth="150" text="Pick route" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <ComboBox fx:id="add_routeTypeComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Spinner fx:id="add_speedSpinner" amountToStepBy="5" initialValue="50" max="100" min="10" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <!-- Aircraft -->
+                <Spinner fx:id="add_fuelSpinner" amountToStepBy="50" initialValue="300" max="1000" min="200" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Spinner fx:id="add_stuffNSpinner" amountToStepBy="1" initialValue="5" max="10" min="1" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                <!-- Civil Aircraft -->
+                <Spinner fx:id="add_passNCASpinner" amountToStepBy="10" initialValue="100" max="300" min="50" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                <!-- Military Aircraft -->
+                <TextField fx:id="add_weaponTypeMATextField" maxWidth="150.0" promptText="Rockets" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                <!-- Cruise Ship -->
+                <Spinner fx:id="add_passNCSSpinner" amountToStepBy="50" initialValue="200" max="1000" min="100" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <TextField fx:id="add_companyTextField" maxWidth="150.0" promptText="Company" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                <!-- Aircraft Carrier -->
+                <TextField fx:id="add_weaponTypeACTextField" maxWidth="150.0" promptText="Rockets" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                <Button fx:id="add_generateButton" disable="true" mnemonicParsing="false" onAction="#add_generateController" prefHeight="30" prefWidth="100" text="Generate" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+               <font>
+                  <Font size="14.0" />
+               </font></Button>
+                <Button fx:id="add_addButton" disable="true" mnemonicParsing="false" onAction="#add_addController" prefHeight="30" prefWidth="100" text="Add" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="11">
+               <font>
+                  <Font size="14.0" />
+               </font></Button>
+            <Button fx:id="add_discardButton" mnemonicParsing="false" onAction="#add_discardController" prefWidth="75.0" text="Discard" visible="false" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="20.0" />
+               </GridPane.margin>
+            </Button>
+            <Button fx:id="add_saveButton" disable="true" mnemonicParsing="false" onAction="#add_saveController" prefWidth="75.0" text="Save" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets right="20.0" />
+               </GridPane.margin>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#add_resetController" prefHeight="30.0" prefWidth="100.0" text="Reset" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+
+                <opaqueInsets><Insets /></opaqueInsets>
+                <padding><Insets bottom="5.0" left="5.0" right="5.0" top="5.0" /></padding>
+            </GridPane>
+        </Tab>
+    </TabPane>
+</GridPane>

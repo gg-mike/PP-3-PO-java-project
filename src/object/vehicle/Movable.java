@@ -5,6 +5,8 @@ public interface Movable {
 
     void move();
     void generateNewRoute();
-    void startStop();
+    void start();
+    void switchRunning();
+    void stop();
     void end();
 }

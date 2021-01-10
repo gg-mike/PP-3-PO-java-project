@@ -1,6 +1,6 @@
 package object.network;
 
-import data.TableCellComponent;
+import component.TableCellComponent;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import object.base.AppObject;

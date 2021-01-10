@@ -1,7 +1,7 @@
 package object.base;
 import data.Database;
-import data.GUIComponent;
-import data.TableCellComponent;
+import component.GUIComponent;
+import component.TableCellComponent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.shape.Shape;

@@ -1,9 +1,9 @@
 package object.network;
 
 import data.Database;
-import data.GUIComponent;
-import data.MovementComponent;
-import data.TableCellComponent;
+import component.GUIComponent;
+import component.MovementComponent;
+import component.TableCellComponent;
 import javafx.collections.ObservableList;
 import util.Utility;
 

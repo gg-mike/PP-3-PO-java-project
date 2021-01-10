@@ -1,7 +1,7 @@
 package object.vehicle.aircraft;
 
 import data.Database;
-import data.TableCellComponent;
+import component.TableCellComponent;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 import object.base.MovingObject;

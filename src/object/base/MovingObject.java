@@ -1,5 +1,8 @@
 package object.base;
 
+import component.GUIMovableComponent;
+import component.TableCellComponent;
+import component.ThreadComponent;
 import data.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -31,8 +34,8 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
         super(data);
         mainRoute = Utility.Convertors.array2linkedList(Utility.JSONInfo.getArray("route"));
         checkRoute(mainRoute);
-        movementType = MovementType.valueOf(((String) Utility.JSONInfo.get("movementType")));
-        if (movementType == MovementType.CIRCLES)
+        movementType = MovementType.valueOf(((String) Utility.JSONInfo.get("routeType")));
+        if (movementType == MovementType.CIRCLES && !mainRoute.getFirst().equals(mainRoute.getLast()))
             mainRoute.add(mainRoute.getFirst());
 
         guiComponent = new GUIMovableComponent(guiComponent,
@@ -230,7 +233,13 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     }
 
     @Override
-    public synchronized void startStop() { threadInfo.switchRunning(); }
+    public void start() { threadInfo.setRunning(true); }
+
+    @Override
+    public synchronized void switchRunning() { threadInfo.switchRunning(); }
+
+    @Override
+    public void stop() { threadInfo.setRunning(false); }
 
     @Override
     public synchronized void end() { threadInfo.setExit(true); }

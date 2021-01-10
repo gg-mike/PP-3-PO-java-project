@@ -69,5 +69,11 @@ public class Utility {
         public static int randInt(int min, int max) {
             return random.nextInt((max - min) + 1) + min;
         }
+
+        public static String intToString(int val, int width) {
+            String valString = String.valueOf(val);
+            while (valString.length() < width) valString = String.format("0%s", valString);
+            return valString;
+        }
     }
 }

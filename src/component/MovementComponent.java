@@ -1,4 +1,4 @@
-package data;
+package component;
 
 public class MovementComponent {
     public enum Heading { N, E, S, W }

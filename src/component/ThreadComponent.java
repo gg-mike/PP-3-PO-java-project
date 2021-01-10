@@ -1,4 +1,4 @@
-package data;
+package component;
 
 public class ThreadComponent {
     private boolean running;
@@ -25,6 +25,10 @@ public class ThreadComponent {
             deltaTime = System.currentTimeMillis();
             return false;
         }
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
     public void switchRunning() {

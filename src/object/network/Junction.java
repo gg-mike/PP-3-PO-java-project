@@ -1,6 +1,6 @@
 package object.network;
 
-import data.MovementComponent;
+import component.MovementComponent;
 
 import java.util.HashMap;
 
