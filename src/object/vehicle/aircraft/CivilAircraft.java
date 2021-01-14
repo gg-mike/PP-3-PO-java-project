@@ -1,5 +1,6 @@
 package object.vehicle.aircraft;
 
+import component.RouteComponent;
 import data.Database;
 import component.TableCellComponent;
 import javafx.collections.ObservableList;
@@ -32,7 +33,7 @@ public final class CivilAircraft extends Aircraft {
 
     @Override
     protected void airportActions() {
-        if (airport_action == AIRPORT_ACTION.NONE && !(isFullStopIntermediateAirports || isMainRouteStop()))
+        if (airport_action == AIRPORT_ACTION.NONE && !(isFullStopIntermediateAirports || routeComponent.isMainRouteStop()))
             airport_action = AIRPORT_ACTION.REFUEL;
         switch (airport_action) {
             case NONE -> airport_action = AIRPORT_ACTION.DEBOARDING;
@@ -53,11 +54,12 @@ public final class CivilAircraft extends Aircraft {
                 if (boarding()) airport_action = AIRPORT_ACTION.REFUEL;
             }
             case READY -> {
-                if (((Airport) Database.getAppObjects().get(destId)).removeUsing(getId())) {
-                    state = State.WAITING_TRACK;
+                if (((Airport) Database.getAppObjects().get(routeComponent.getDest())).removeUsing(getId())) {
+                    routeComponent.setState(RouteComponent.State.WAITING_TRACK);
                     airport_action = AIRPORT_ACTION.NONE;
-                    setNewDestID();
-                    if (destId == null) generateNewRoute();
+
+                    movementComponent.setDest(routeComponent.setNewDest());
+                    if (routeComponent.getDest() == null) generateNewRoute();
                 } else
                     System.out.println("Removing from airport error");
             }

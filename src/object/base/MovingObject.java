@@ -1,8 +1,6 @@
 package object.base;
 
-import component.GUIMovableComponent;
-import component.TableCellComponent;
-import component.ThreadComponent;
+import component.*;
 import data.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -15,91 +13,22 @@ import util.Utility;
 import java.util.*;
 
 public abstract class MovingObject extends AppObject implements Movable, Runnable {
-    public enum State { MOVING, WAITING_JUNCTION, WAITING_AIRPORT, JUNCTION, AIRPORT, WAITING_TRACK, STOP }
     public final int fps = 10;
 
-    protected volatile ThreadComponent threadInfo = new ThreadComponent(false, fps);
-    protected MovementType movementType;
-    protected MovementType initialMovementType = null;
-    protected LinkedList<String> mainRoute;
-    protected LinkedList<Integer> mainRouteIndexInIntermediate;
-    protected LinkedList<String> intermediateRoute;
-    protected LinkedList<String> initialMainRoute = null;
-    protected String destId = null;
-    protected String emergencyDestId = null;
-    protected State state;
-    private String currTrackUsed = null;
+    protected volatile ThreadComponent threadComponent = new ThreadComponent(false, fps);
+    protected volatile MovementComponent movementComponent;
+    protected volatile RouteComponent routeComponent;
 
     public MovingObject(String data) {
         super(data);
-        mainRoute = Utility.Convertors.array2linkedList(Utility.JSONInfo.getArray("route"));
-        checkRoute(mainRoute);
-        movementType = MovementType.valueOf(((String) Utility.JSONInfo.get("routeType")));
-        if (movementType == MovementType.CIRCLES && !mainRoute.getFirst().equals(mainRoute.getLast()))
-            mainRoute.add(mainRoute.getFirst());
-
-        guiComponent = new GUIMovableComponent(guiComponent,
-                ((Number) Utility.JSONInfo.get("speed")).doubleValue() / fps, 10);
+        guiComponent = new GUIMovableComponent(guiComponent);
+        movementComponent = new MovementComponent(((Number) Utility.JSONInfo.get("speed")).doubleValue() / fps, 10);
+        routeComponent = new RouteComponent(Utility.Convertors.array2linkedList(Utility.JSONInfo.getArray("route")),
+                RouteComponent.RouteType.valueOf(((String) Utility.JSONInfo.get("routeType"))), Database.ObjectType.valueOf(getId().substring(0, 2)));
     }
 
-    public void initRoute(boolean firstTime) {
-        intermediateRoute = buildIntermediateRoute();
-        destId = intermediateRoute.remove();
-        if (firstTime) {
-            double destX = Database.getAppObjects().get(destId).getX();
-            double destY = Database.getAppObjects().get(destId).getY();
-            state = (Database.getAppObjects().get(destId).getId().startsWith("AP")) ? State.WAITING_AIRPORT : State.WAITING_JUNCTION;
-            if (intermediateRoute.size() != 0) {
-                String nextDestId = intermediateRoute.getFirst();
-                double nextDestX = Database.getAppObjects().get(nextDestId).getX();
-                double nextDestY = Database.getAppObjects().get(nextDestId).getY();
-                ((GUIMovableComponent) guiComponent).init(destX, destY, nextDestX, nextDestY);
-            }
-        }
-        else setNewDestID();
-    }
-
-    private void checkRoute(LinkedList<String> route) {
-        try {
-            for (String elem : route)
-                if (!Database.getAirports().contains(elem) && !Database.getJunctions().contains(elem)) {
-                    System.out.println("MovingObject.checkRoute(): Invalid element in route, elem=" + route);
-                    throw new Exception();
-                }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected LinkedList<String> buildIntermediateRoute() {
-        LinkedList<String> ir = new LinkedList<>();
-        mainRouteIndexInIntermediate = new LinkedList<>();
-        char assignment = (getId().startsWith("CA") || getId().startsWith("MA"))? 'A' : 'W';
-        for (int i = 0; i < mainRoute.size() - 1; i++) {
-            ir.addAll(Database.createRoute(mainRoute.get(i), mainRoute.get(i+1), assignment));
-            ir.removeLast();
-        }
-        ir.add(mainRoute.getLast());
-
-        for (String mainStop : mainRoute)
-            mainRouteIndexInIntermediate.add(ir.size() - ir.indexOf(mainStop));
-
-        return ir;
-    }
-
-    protected void setNewDestID() {
-        if (intermediateRoute.size() != 0) {
-            destId = intermediateRoute.remove();
-            double destX = Database.getAppObjects().get(destId).getX();
-            double destY = Database.getAppObjects().get(destId).getY();
-            ((GUIMovableComponent) guiComponent).getMovementComponent().setDest(destX, destY);
-        }
-        else
-            destId = null;
-    }
-
-    protected boolean isMainRouteStop() {
-        return mainRouteIndexInIntermediate.contains(intermediateRoute.size() + 1);
+    public void initRouteComponent(boolean firstTime) {
+        movementComponent.setDest(routeComponent.initRoute(firstTime));
     }
 
     public Label getLabel() { return ((GUIMovableComponent) guiComponent).getLabel(); }
@@ -111,8 +40,8 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     public void setVisibleWaitingAtJunction(boolean visibleWaitingAtJunction) { ((GUIMovableComponent) guiComponent).setShapeVisibleWaitingAtJunctions(visibleWaitingAtJunction); }
 
     public void update() {
-        ((GUIMovableComponent) guiComponent).update(null, state == State.MOVING,
-                state == State.WAITING_AIRPORT || state == State.WAITING_JUNCTION || state == State.WAITING_TRACK);
+        ((GUIMovableComponent) guiComponent).update(null, movementComponent.getPositionData(),
+                routeComponent.isMoving(), routeComponent.isWaiting());
     }
 
     protected abstract void moveActions();
@@ -121,133 +50,125 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
 
     @Override
     public synchronized void move() {
-        switch (state) {
-            case MOVING -> {
-                if (((GUIMovableComponent) guiComponent).getMovementComponent().arrived()) {
-                    if (Database.getAppObjects().get(destId).getId().startsWith("AP"))
-                        state = State.WAITING_AIRPORT;
-                    else if (Database.getAppObjects().get(destId).getId().startsWith("JU"))
-                        state = State.WAITING_JUNCTION;
-                    if (currTrackUsed != null)
-                        if (!((Track) Database.getAppObjects().get(currTrackUsed)).removeUsing(getId()))
-                            System.out.println("Track " + currTrackUsed + " doesn't contain vehicle with this id " + getId());
+        switch (routeComponent.getState()) {
+            case CONNECTING_TO_TRAFFIC_X -> {
+                if (movementComponent.arrived()) {
+                    movementComponent.setDest(new ArrayList<>(Arrays.asList(getGUI_X(), getGUI_Y(), getGUI_X(), Database.getAppObjects().get(routeComponent.getTmpDest()).getGUI_Y())));
+                    routeComponent.setState(RouteComponent.State.CONNECTING_TO_TRAFFIC_Y);
                 }
                 else {
-                    ((GUIMovableComponent) guiComponent).getMovementComponent().move();
+                    movementComponent.move();
+                    moveActions();
+                }
+            }
+            case CONNECTING_TO_TRAFFIC_Y -> {
+                if (movementComponent.arrived()) {
+                    if (Database.getAppObjects().get(routeComponent.getTmpDest()).getId().startsWith("AP"))
+                        routeComponent.setState(RouteComponent.State.WAITING_AIRPORT);
+                    else if (Database.getAppObjects().get(routeComponent.getTmpDest()).getId().startsWith("JU"))
+                        routeComponent.setState(RouteComponent.State.CONNECTING_TO_TRAFFIC_Y);
+                    routeComponent.setRouteType(RouteComponent.RouteType.CONNECTING);
+                    generateNewRoute();
+                }
+                else {
+                    movementComponent.move();
+                    moveActions();
+                }
+            }
+            case MOVING -> {
+                if (movementComponent.arrived()) {
+                    if (Database.getAppObjects().get(routeComponent.getDest()).getId().startsWith("AP"))
+                        routeComponent.setState(RouteComponent.State.WAITING_AIRPORT);
+                    else if (Database.getAppObjects().get(routeComponent.getDest()).getId().startsWith("JU"))
+                        routeComponent.setState(RouteComponent.State.WAITING_JUNCTION);
+                    if (routeComponent.getUsedTrack() != null)
+                        if (!((Track) Database.getAppObjects().get(routeComponent.getUsedTrack())).removeUsing(getId()))
+                            System.out.println("Track " + routeComponent.getUsedTrack() + " doesn't contain vehicle with this id " + getId());
+                }
+                else {
+                    movementComponent.move();
                     moveActions();
                 }
             }
             case WAITING_JUNCTION -> {
-                if (((Junction) Database.getAppObjects().get(destId)).addUsing(getId()))
-                    state = State.JUNCTION;
+                if (((Junction) Database.getAppObjects().get(routeComponent.getDest())).addUsing(getId()))
+                    routeComponent.setState(RouteComponent.State.JUNCTION);
             }
             case WAITING_AIRPORT -> {
-                if (((Airport) Database.getAppObjects().get(destId)).addUsing(getId()))
-                    state = State.AIRPORT;
+                if (((Airport) Database.getAppObjects().get(routeComponent.getDest())).addUsing(getId()))
+                    routeComponent.setState(RouteComponent.State.AIRPORT);
             }
             case JUNCTION -> {
-                if (((Junction) Database.getAppObjects().get(destId)).removeUsing(getId())) {
-                    state = State.WAITING_TRACK;
-                    setNewDestID();
-                    if (destId == null) generateNewRoute();
+                if (((Junction) Database.getAppObjects().get(routeComponent.getDest())).removeUsing(getId())) {
+                    routeComponent.setState(RouteComponent.State.WAITING_TRACK);
+                    movementComponent.setDest(routeComponent.setNewDest());
+                    if (routeComponent.getDest() == null) generateNewRoute();
                 }
                 else
                     System.out.println("Removing from junction error");
             }
             case AIRPORT -> airportActions();
             case WAITING_TRACK -> {
-                currTrackUsed = ((Junction) Database.getAppObjects().get(destId)).getTrack(((GUIMovableComponent) guiComponent).getMovementComponent().getHeading(), true);
-                if (currTrackUsed != null) {
-                    Track track = (Track) Database.getAppObjects().get(currTrackUsed);
+                routeComponent.setUsedTrack(((Junction) Database.getAppObjects().get(routeComponent.getDest())).getTrack(movementComponent.getHeading(), true));
+                if (routeComponent.getUsedTrack() != null) {
+                    Track track = (Track) Database.getAppObjects().get(routeComponent.getUsedTrack());
                     if (track.getDirection() == 2) {
                         track.addUsing(getId());
-                        state = State.MOVING;
+                        routeComponent.setState(RouteComponent.State.MOVING);
                     }
                     else if (track.getDirection() == 0) {
-                        if (track.getPoints()[1].equals(destId)) {
+                        if (track.getPoints()[1].equals(routeComponent.getDest())) {
                             track.addUsing(getId());
-                            state = State.MOVING;
+                            routeComponent.setState(RouteComponent.State.MOVING);
                         }
                         else if (track.getUsing().size() == 0) {
                             track.setDirection(1);
                             track.addUsing(getId());
-                            state = State.MOVING;
+                            routeComponent.setState(RouteComponent.State.MOVING);
                         }
                     }
                     else if (track.getDirection() == 1) {
-                        if (track.getPoints()[0].equals(destId)) {
+                        if (track.getPoints()[0].equals(routeComponent.getDest())) {
                             track.addUsing(getId());
-                            state = State.MOVING;
+                            routeComponent.setState(RouteComponent.State.MOVING);
                         }
                         else if (track.getUsing().size() == 0) {
                             track.setDirection(0);
                             track.addUsing(getId());
-                            state = State.MOVING;
+                            routeComponent.setState(RouteComponent.State.MOVING);
                         }
                     }
                 }
                 else
-                    System.out.println("MovingObject.move: Error in retrieving trackId, destId=" + destId +
-                            ", heading=" + ((GUIMovableComponent) guiComponent).getMovementComponent().getHeading() + ", invertHeading=" + true +
-                            ", tracks=" + ((Junction) Database.getAppObjects().get(destId)).getTracks());
+                    System.out.println("MovingObject.move: Error in retrieving trackId, destId=" + routeComponent.getDest() +
+                            ", heading=" + movementComponent.getHeading() + ", invertHeading=" + true +
+                            ", tracks=" + ((Junction) Database.getAppObjects().get(routeComponent.getDest())).getTracks());
             }
         }
     }
 
     @Override
     public synchronized void generateNewRoute() {
-        switch (movementType) {
-            case ONCE -> {
-                state = State.STOP;
-                threadInfo.setExit(true);
-            }
-            case EMERGENCY -> {
-                if (initialMovementType != null && initialMainRoute != null && emergencyDestId != null) {
-                    movementType = MovementType.AFTER_EMERGENCY;
-                    mainRoute.clear();
-                    mainRoute.add(emergencyDestId);
-                    mainRoute.add(initialMainRoute.getFirst());
-                    initRoute(false);
-                }
-                else {
-                    state = State.STOP;
-                    threadInfo.setExit(true);
-                }
-            }
-            case AFTER_EMERGENCY -> {
-                movementType = initialMovementType;
-                mainRoute = initialMainRoute;
-                initialMovementType = null;
-                initialMainRoute = null;
-                emergencyDestId = null;
-                initRoute(false);
-            }
-            case CIRCLES ->
-                initRoute(false);
-
-            case THERE_AND_BACK -> {
-                Collections.reverse(mainRoute);
-                initRoute(false);
-            }
-        }
+        movementComponent.setDest(routeComponent.generateNewRoute());
+        threadComponent.setExit(routeComponent.getState() == RouteComponent.State.STOP);
     }
 
     @Override
-    public void start() { threadInfo.setRunning(true); }
+    public void start() { threadComponent.setRunning(true); }
 
     @Override
-    public synchronized void switchRunning() { threadInfo.switchRunning(); }
+    public synchronized void switchRunning() { threadComponent.switchRunning(); }
 
     @Override
-    public void stop() { threadInfo.setRunning(false); }
+    public void stop() { threadComponent.setRunning(false); }
 
     @Override
-    public synchronized void end() { threadInfo.setExit(true); }
+    public synchronized void end() { threadComponent.setExit(true); }
 
     @Override
     public void run() {
-        while (!threadInfo.isExit()) {
-            if (threadInfo.isFrame())
+        while (!threadComponent.isExit()) {
+            if (threadComponent.isFrame())
                 move();
         }
     }
@@ -255,20 +176,20 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     @Override
     public String toString() {
         return  super.toString() +
-                String.format("  state: %s\n", state) +
-                String.format("  speed: %.2f\n", ((GUIMovableComponent) guiComponent).getMovementComponent().getSpeed()) +
-                String.format("  heading: %s\n", ((GUIMovableComponent) guiComponent).getMovementComponent().getHeading()) +
-                String.format("  route: %s\n", mainRoute) +
-                String.format("  destId: %s\n", destId);
+                String.format("  state: %s\n", routeComponent.getState()) +
+                String.format("  speed: %.2f\n", movementComponent.getSpeed()) +
+                String.format("  heading: %s\n", movementComponent.getHeading()) +
+                String.format("  route: %s\n", routeComponent.getMainRoute()) +
+                String.format("  destId: %s\n", routeComponent.getDest());
     }
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("state", state.toString()));
-        objectInfos.add(new TableCellComponent("speed", Double.toString(((GUIMovableComponent) guiComponent).getMovementComponent().getSpeed())));
-        objectInfos.add(new TableCellComponent("heading", ((GUIMovableComponent) guiComponent).getMovementComponent().getHeading().toString()));
-        objectInfos.add(new TableCellComponent("route", mainRoute.toString()));
-        objectInfos.add(new TableCellComponent("destId", destId));
+        objectInfos.add(new TableCellComponent("state", routeComponent.getState().toString()));
+        objectInfos.add(new TableCellComponent("speed", Double.toString(movementComponent.getSpeed())));
+        objectInfos.add(new TableCellComponent("heading", movementComponent.getHeading().toString()));
+        objectInfos.add(new TableCellComponent("route", routeComponent.getMainRoute().toString()));
+        objectInfos.add(new TableCellComponent("destId", routeComponent.getDest()));
         return objectInfos;
     }
 }

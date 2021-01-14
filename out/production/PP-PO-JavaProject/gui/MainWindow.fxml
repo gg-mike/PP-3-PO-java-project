@@ -33,7 +33,7 @@
         </MenuButton>
         <MenuButton mnemonicParsing="false" prefWidth="100.0" text="Simulation">
             <items>
-                <CheckMenuItem fx:id="simulation_fullStopCheckbox" mnemonicParsing="false" onAction="#simulation_fullStopController" text="Full stop at airports" />
+                <CheckMenuItem fx:id="simulation_fullStopCheckbox" mnemonicParsing="false" onAction="#simulation_fullStopController" text="Full stop at intermediate airports" />
             </items>
         </MenuButton>
     </ToolBar>
@@ -51,7 +51,7 @@
         </Tab>
         <Tab text="Help" />
     </TabPane>
-    <TabPane tabClosingPolicy="UNAVAILABLE" tabMinWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1">
+    <TabPane fx:id="rightTabPane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1">
         <Tab fx:id="info_Tab" disable="true" text="Info">
             <GridPane hgap="10.0" prefHeight="504.0" prefWidth="399.0">
                 <columnConstraints>
@@ -166,7 +166,7 @@
                <font>
                   <Font size="14.0" />
                </font></Button>
-                <Button fx:id="add_addButton" disable="true" mnemonicParsing="false" onAction="#add_addController" prefHeight="30" prefWidth="100" text="Add" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="11">
+                <Button fx:id="add_addButton" disable="true" mnemonicParsing="false" onAction="#add_addController" prefHeight="30" prefWidth="100" text="Add" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="11">
                <font>
                   <Font size="14.0" />
                </font></Button>
@@ -181,6 +181,11 @@
                </GridPane.margin>
             </Button>
             <Button mnemonicParsing="false" onAction="#add_resetController" prefHeight="30.0" prefWidth="100.0" text="Reset" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="add_cancelButton" mnemonicParsing="false" onAction="#add_cancelController" prefHeight="30.0" prefWidth="100.0" text="Cancel" GridPane.halignment="CENTER" GridPane.rowIndex="11">
                <font>
                   <Font size="14.0" />
                </font>

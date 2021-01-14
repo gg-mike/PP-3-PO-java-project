@@ -62,12 +62,16 @@ public class Utility {
             return val;
         }
 
-        public static double distance(double x1, double y1, double x2, double y2) {
-            return java.lang.Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        public static int closestMultiple(Number val, int multiple) {
+            double multiplesInVal = val.doubleValue() / multiple;
+            int low = (int) (multiple * java.lang.Math.floor(multiplesInVal));
+            int high = (int) (multiple * java.lang.Math.ceil(multiplesInVal));
+            if (val.doubleValue() - low <= high - val.doubleValue()) return low;
+            else return high;
         }
 
-        public static int randInt(int min, int max) {
-            return random.nextInt((max - min) + 1) + min;
+        public static double dist(double x1, double y1, double x2, double y2) {
+            return java.lang.Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
         }
 
         public static String intToString(int val, int width) {
@@ -75,5 +79,10 @@ public class Utility {
             while (valString.length() < width) valString = String.format("0%s", valString);
             return valString;
         }
+
+        public static int randInt(int min, int max) {
+            return random.nextInt((max - min) + 1) + min;
+        }
+
     }
 }

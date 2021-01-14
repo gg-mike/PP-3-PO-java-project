@@ -8,11 +8,14 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
 /**
- * Unmovable GUI object
+ * Stationary GUI object
  */
 public class GUIComponent {
     public enum ShapeType { LINE, CIRCLE, POLYGON }
 
+    /**
+     * Holds all polygon shapes for vehicles
+     */
     protected static class GUIPolygon {
         public static final Double[] civilAirplane = {
                 0.0, 5.0,
@@ -117,8 +120,6 @@ public class GUIComponent {
     protected ShapeType shapeType;
     protected Shape shape = null;
 
-    // INIT
-
     /**
      * Constructor
      * @param id id of the object
@@ -129,7 +130,7 @@ public class GUIComponent {
     /**
      * Init shape
      * @param id id of the object
-     * @param coords coordinates for the shape (4 for LINE [x1, y1, x2, y2], 2 for overs [x, y])
+     * @param coords positional coordinates for the shape (4 for LINE [x1, y1, x2, y2], 2 for overs [x, y])
      */
     public void init(String id, Double... coords) {
         shape = getShapeBase(id, coords);
@@ -138,8 +139,12 @@ public class GUIComponent {
         else shapeType = ShapeType.POLYGON;
     }
 
-    // FUNCTIONALITY
-
+    /**
+     * Create the shape based on the type of the object
+     * @param id id of the object
+     * @param coords positional coordinates for shape
+     * @return newly created shape specific to the given type
+     */
     public static Shape getShapeBase(String id, Double... coords) {
         Color fill = null, stroke = null;
         Double size = null;
@@ -237,10 +242,14 @@ public class GUIComponent {
         }
     }
 
-    // GETTERS / SETTERS
-
+    /**
+     * @return id of the object
+     */
     public String getId() { return shape.getId(); }
 
+    /**
+     * @return positional coordinates of the object
+     */
     public Double[] getCoords() {
         switch (shapeType) {
             case LINE -> { return new Double[] {
@@ -257,5 +266,8 @@ public class GUIComponent {
         return null;
     }
 
+    /**
+     * @return shape object
+     */
     public Shape getShape() { return shape; }
 }

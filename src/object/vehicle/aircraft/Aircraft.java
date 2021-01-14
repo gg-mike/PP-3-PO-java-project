@@ -1,6 +1,5 @@
 package object.vehicle.aircraft;
 
-import data.Database;
 import component.TableCellComponent;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
@@ -42,19 +41,13 @@ public abstract class Aircraft extends MovingObject {
     }
 
     public void emergencyStop() {
-        initialMovementType = movementType;
-        initialMainRoute = mainRoute;
-        mainRoute = Database.getClosestAirport(destId, (getId().startsWith("CA")? 'C' : 'A'));
-        emergencyDestId = mainRoute.getLast();
-        intermediateRoute = mainRoute;
-        intermediateRoute.removeFirst();
-        movementType = MovementType.EMERGENCY;
+        routeComponent.emergency();
         airport_action = AIRPORT_ACTION.EMERGENCY;
     }
 
     @Override
     protected void moveActions() {
-        burnFuel(5 / threadInfo.getFps());
+        burnFuel(5 / threadComponent.getFPS());
     }
 
     @Override

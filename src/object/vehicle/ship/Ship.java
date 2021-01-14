@@ -1,5 +1,6 @@
 package object.vehicle.ship;
 
+import component.RouteComponent;
 import object.base.MovingObject;
 
 public abstract class Ship extends MovingObject {
@@ -8,7 +9,7 @@ public abstract class Ship extends MovingObject {
 
     @Override
     protected void airportActions() {
-        state = State.MOVING;
+        routeComponent.setState(RouteComponent.State.MOVING);
     }
 
     @Override

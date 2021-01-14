@@ -53,7 +53,7 @@ public class Database {
         waterGraph = new Graph(airports, junctions, 'W');
         for (String id : appObjects.keySet())
             if (appObjects.get(id) instanceof MovingObject)
-                ((MovingObject) appObjects.get(id)).initRoute(true);
+                ((MovingObject) appObjects.get(id)).initRouteComponent(true);
         createThreads();
     }
 
@@ -95,10 +95,18 @@ public class Database {
             default -> System.out.println("Wrong Type: " + obj.getString("id"));
         }
         if (!isStartUp) {
-            ((MovingObject) Database.getAppObjects().get(obj.getString("id"))).initRoute(true);
+            ((MovingObject) Database.getAppObjects().get(obj.getString("id"))).initRouteComponent(true);
             threads.put(obj.getString("id"), new Thread((Runnable) appObjects.get(obj.getString("id"))));
             threads.get(obj.getString("id")).start();
         }
+    }
+
+    public static void initDeployMA(JSONObject obj, double x, double y) {
+        appObjects.put(obj.getString("id"), new MilitaryAircraft(obj.toString(), x, y));
+        aircrafts.add(obj.getString("id"));
+
+        threads.put(obj.getString("id"), new Thread((Runnable) appObjects.get(obj.getString("id"))));
+        threads.get(obj.getString("id")).start();
     }
 
     private static void createThreads() {
@@ -181,13 +189,13 @@ public class Database {
         isInit = false;
     }
 
-    public static LinkedList<String> createRoute(String startId, String endId, char assignment) {
-        if (assignment == 'A') return airGraph.createRoute(startId, endId);
-        else return waterGraph.createRoute(startId, endId);
+    public static LinkedList<String> createRoute(String startId, String endId, char assignment, boolean isCivil) {
+        if (assignment == 'A') return airGraph.createRoute(startId, endId, isCivil);
+        else return waterGraph.createRoute(startId, endId, isCivil);
     }
 
-    public static LinkedList<String> getClosestAirport(String startId, char assignment) {
-        return airGraph.getClosestAirport(startId, assignment);
+    public static LinkedList<String> getClosestAirport(String startId, boolean isCivil) {
+        return airGraph.getClosestAirport(startId, isCivil);
     }
 
     public static Double getTracksWeight(String p1, String p2) {

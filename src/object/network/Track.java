@@ -21,7 +21,7 @@ public class Track extends NetworkObject {
         points = new String[]{(String) objects.get(0), (String) objects.get(1)};
         guiComponent = new GUIComponent(Utility.StringInfo.getId(), getPointsCoord());
         addTracksToJunctions();
-        len = Utility.Math.distance(getStartX(), getStartY(), getEndX(), getEndY());
+        len = Utility.Math.dist(getStartGUI_X(), getStartGUI_Y(), getEndGUI_X(), getEndGUI_Y());
     }
 
     public int getDirection() { return direction; }
@@ -34,16 +34,16 @@ public class Track extends NetworkObject {
         if ((Database.getJunctions().contains(points[0]) || Database.getAirports().contains(points[0])) &&
                 (Database.getJunctions().contains(points[1]) || Database.getAirports().contains(points[1]))) {
             return new Double[]{
-                    Database.getAppObjects().get(points[0]).getX(), Database.getAppObjects().get(points[0]).getY(),
-                    Database.getAppObjects().get(points[1]).getX(), Database.getAppObjects().get(points[1]).getY() };
+                    Database.getAppObjects().get(points[0]).getGUI_X(), Database.getAppObjects().get(points[0]).getGUI_Y(),
+                    Database.getAppObjects().get(points[1]).getGUI_X(), Database.getAppObjects().get(points[1]).getGUI_Y() };
         }
         else
             return null;
     }
 
     private void addTracksToJunctions() {
-        double diffX = getStartX() - getEndX();
-        double diffY = getStartY() - getEndY();
+        double diffX = getStartGUI_X() - getEndGUI_X();
+        double diffY = getStartGUI_Y() - getEndGUI_Y();
         if (diffX == 0 && diffY < 0) {
             ((Junction) Database.getAppObjects().get(points[0])).addTrack(MovementComponent.Heading.S, getId());
             ((Junction) Database.getAppObjects().get(points[1])).addTrack(MovementComponent.Heading.N, getId());
@@ -70,13 +70,13 @@ public class Track extends NetworkObject {
         return true;
     }
 
-    public double getStartX() { return guiComponent.getCoords()[0]; }
-    public double getEndX() { return guiComponent.getCoords()[1]; }
-    public double getStartY() { return guiComponent.getCoords()[2]; }
-    public double getEndY() { return guiComponent.getCoords()[3]; }
+    public double getStartGUI_X() { return guiComponent.getCoords()[0]; }
+    public double getEndGUI_X() { return guiComponent.getCoords()[1]; }
+    public double getStartGUI_Y() { return guiComponent.getCoords()[2]; }
+    public double getEndGUI_Y() { return guiComponent.getCoords()[3]; }
 
-    @Deprecated public double getX() { return 0; }
-    @Deprecated public double getY() { return 0; }
+    @Deprecated public double getGUI_X() { return 0; }
+    @Deprecated public double getGUI_Y() { return 0; }
 
     public double getLen() { return len; }
 

@@ -2,7 +2,6 @@ package object.vehicle.ship;
 
 import component.TableCellComponent;
 import javafx.collections.ObservableList;
-import javafx.scene.input.MouseEvent;
 import util.Utility;
 
 public final class AircraftCarrier extends Ship {
@@ -14,14 +13,14 @@ public final class AircraftCarrier extends Ship {
         weaponType = (String) Utility.JSONInfo.get("weaponType");
     }
 
-    public void deployMA(MouseEvent event) {
-
-    }
-
     @Override
     public String toString() {
         return  super.toString() +
                 String.format("  weaponType: %s\n", weaponType);
+    }
+
+    public String getWeaponType() {
+        return weaponType;
     }
 
     public ObservableList<TableCellComponent> getObjectInfo() {

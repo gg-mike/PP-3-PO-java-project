@@ -51,7 +51,7 @@ class Graph {
             nodes.get(nodeId).currWeight = Double.MAX_VALUE;
     }
 
-    public LinkedList<String> createRoute(String startId, String endId) {
+    public LinkedList<String> createRoute(String startId, String endId, boolean isCivil) {
         LinkedList<String> route = new LinkedList<>();
 
         HashMap<String, String> con = new HashMap<>();
@@ -67,18 +67,20 @@ class Graph {
             String p = points.remove();
 
             for (String c : nodes.get(p).connections) {
-                Double cw = Database.getTracksWeight(p, c);
-                if (cw == null)
-                    System.out.println("Database.createRoute: track between " + p + " and " + c + " not found");
-                else {
-                    double w = nodes.get(p).currWeight + cw;
-                    if (nodes.get(c).currWeight > w) {
-                        nodes.get(c).currWeight = w;
-                        con.put(c, p);
-                    }
-                    if (!visited.contains(c)) {
-                        points.add(c);
-                        visited.add(c);
+                if (!isCivil || !c.startsWith("APM")) {
+                    Double cw = Database.getTracksWeight(p, c);
+                    if (cw == null)
+                        System.out.println("Database.createRoute: track between " + p + " and " + c + " not found");
+                    else {
+                        double w = nodes.get(p).currWeight + cw;
+                        if (nodes.get(c).currWeight > w) {
+                            nodes.get(c).currWeight = w;
+                            con.put(c, p);
+                        }
+                        if (!visited.contains(c)) {
+                            points.add(c);
+                            visited.add(c);
+                        }
                     }
                 }
             }
@@ -105,12 +107,12 @@ class Graph {
         return len;
     }
 
-    public LinkedList<String> getClosestAirport(String startId, char assignment) {
+    public LinkedList<String> getClosestAirport(String startId, boolean isCivil) {
         ArrayList<LinkedList<String>> possibleRoutes = new ArrayList<>();
         ArrayList<Double> routesLens = new ArrayList<>();
         for (String airport : Database.getAirports()) {
-            if (assignment == 'A' || (assignment == 'C' && airport.charAt(2) == 'C')) {
-                possibleRoutes.add(createRoute(startId, airport));
+            if (!isCivil || airport.charAt(2) == 'C') {
+                possibleRoutes.add(createRoute(startId, airport, isCivil));
                 routesLens.add(calculateLength(possibleRoutes.get(possibleRoutes.size() - 1)));
             }
         }

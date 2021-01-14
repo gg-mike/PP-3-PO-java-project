@@ -53,17 +53,18 @@ public class MainWindow {
     private AnimationTimer tableRefresher;
 
     // "Add" Tab Objects
-    public Button add_pickRouteButton, add_discardButton, add_saveButton, add_generateButton, add_addButton;
+    public Button add_pickRouteButton, add_discardButton, add_saveButton, add_generateButton, add_cancelButton, add_addButton;
     public ComboBox<String> add_vehicleTypeComboBox, add_routeTypeComboBox;
     public Label add_property1Label, add_property2Label, add_property3Label, add_idLabel, add_jsonLabel;
     public Spinner<Integer> add_speedSpinner, add_fuelSpinner, add_stuffNSpinner, add_passNCASpinner, add_passNCSSpinner;
     public Tab add_Tab;
     public TextField add_weaponTypeMATextField, add_companyTextField, add_weaponTypeACTextField;
     private AnimationTimer routeSizeCondition;
-    private boolean isMapPick = false;
+    private boolean isMapPick = false, isDeployMA = false;
+    private String acId;
 
     // Other Objects
-
+    public TabPane rightTabPane;
 
     // Toolbar Functionality
 
@@ -236,7 +237,7 @@ public class MainWindow {
                     case 2, 3 -> isAdd = networkObject.getId().startsWith("JUW");
                 }
                 if (isAdd) {
-                    Label label = MapPicker.addToken(networkObject.getX(), networkObject.getY());
+                    Label label = MapPicker.addToken(networkObject.getGUI_X(), networkObject.getGUI_Y());
                     if (label != null)
                         label.setOnContextMenuRequested(contextMenuEvent -> map_tokenContextMenu.show(label, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY()));
                 }
@@ -266,7 +267,7 @@ public class MainWindow {
                     info_optionButtonSet(info_option1Button, id, "Delete",
                             true, false, this::removeVehicle);
                     info_optionButtonSet(info_option2Button, id, "Deploy Military Aircraft",
-                            true, false, ((AircraftCarrier) Database.getAppObjects().get(id))::deployMA);
+                            true, false, this::add_initDeployMA);
                 }
                 case CS -> {
                     info_optionButtonSet(info_option1Button, id, "Delete",
@@ -334,6 +335,11 @@ public class MainWindow {
         add_Tab.setDisable(false);
     }
 
+    private void add_initDeployMA(MouseEvent event) {
+        acId = ((Node) event.getSource()).getId();
+        add_resetDeployMA(((AircraftCarrier) Database.getAppObjects().get(acId)).getWeaponType());
+    }
+
     private void add_reset() {
         add_resetContent();
         add_interfaceAC();
@@ -341,6 +347,16 @@ public class MainWindow {
         add_discardButton.setVisible(false);
         add_saveButton.setVisible(false);
         add_Tab.setDisable(true);
+    }
+    private void add_resetDeployMA(String weaponType) {
+        isDeployMA = true;
+        rightTabPane.getSelectionModel().select(add_Tab);
+        add_vehicleTypeComboBox.getSelectionModel().select(1);
+        add_vehicleTypeComboBox.setDisable(true);
+        add_resetContent();
+        add_interfaceMA();
+        add_weaponTypeMATextField.setText(weaponType);
+        add_weaponTypeMATextField.setDisable(true);
     }
 
     public void add_vehicleTypeChangeController() {
@@ -373,7 +389,9 @@ public class MainWindow {
 
     public void add_discardController() {
         MapPicker.clear();
-        add_vehicleTypeComboBox.setDisable(false);
+        add_generateButton.setDisable(true);
+        if (!isDeployMA)
+            add_vehicleTypeComboBox.setDisable(false);
         add_endPicking();
     }
 
@@ -403,12 +421,16 @@ public class MainWindow {
 
     public void add_resetController() {
         MapPicker.clear();
-        add_vehicleTypeComboBox.setDisable(false);
-        add_vehicleTypeChangeController();
+        add_generateButton.setDisable(true);
+        if (!isDeployMA) {
+            add_vehicleTypeComboBox.setDisable(false);
+            add_vehicleTypeChangeController();
+        }
+        else
+            add_resetDeployMA(add_weaponTypeMATextField.getText());
     }
 
     public void add_generateController() {
-
         switch (add_vehicleTypeComboBox.getSelectionModel().getSelectedIndex()) {
             case 0 -> add_jsonLabel.setText(ObjectGenerator.generateJSON(0, add_speedSpinner.getValue(), MapPicker.getPoints(),
                     add_routeTypeComboBox.getSelectionModel().getSelectedIndex(),
@@ -431,9 +453,18 @@ public class MainWindow {
         add_addButton.setDisable(false);
     }
 
+    public void add_cancelController() {
+        acId = null;
+        isDeployMA = false;
+        add_resetContent();
+    }
+
     public void add_addController() {
         JSONObject jsonObject = new JSONObject(add_jsonLabel.getText());
-        Database.initAppObject(jsonObject, false);
+        if (isDeployMA)
+            Database.initDeployMA(jsonObject, Database.getAppObjects().get(acId).getGUI_X(), Database.getAppObjects().get(acId).getGUI_Y());
+        else
+            Database.initAppObject(jsonObject, false);
         Database.getAppObjects().get(jsonObject.getString("id")).getShape().setOnMouseClicked(this::map_objectChosenController);
         objectsGroup.getChildren().add((Database.getAppObjects().get(jsonObject.getString("id"))).getShape());
         objectsGroup.getChildren().add(((MovingObject) (Database.getAppObjects().get(jsonObject.getString("id")))).getLabel());
@@ -442,8 +473,6 @@ public class MainWindow {
         add_addButton.setDisable(true);
         add_generateButton.setDisable(true);
         add_saveButton.setDisable(true);
-
-
     }
 
     private void add_interfaceCA() {

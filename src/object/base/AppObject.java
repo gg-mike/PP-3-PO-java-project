@@ -19,9 +19,9 @@ public abstract class AppObject {
 
     public Shape getShape() { return guiComponent.getShape(); }
 
-    public double getX() { return guiComponent.getCoords()[0]; }
+    public double getGUI_X() { return guiComponent.getCoords()[0]; }
 
-    public double getY() { return guiComponent.getCoords()[1]; }
+    public double getGUI_Y() { return guiComponent.getCoords()[1]; }
 
     public String getId() {
         return guiComponent.getId();
@@ -36,13 +36,13 @@ public abstract class AppObject {
     @Override
     public String toString() {
         return  String.format("Id: %s\n", getId()) +
-                String.format("  coord: (%.1f | %.1f)\n", getX(), getY());
+                String.format("  coord: (%.1f | %.1f)\n", getGUI_X(), getGUI_Y());
     }
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = FXCollections.observableArrayList();
         objectInfos.add(new TableCellComponent("ID", getId()));
-        objectInfos.add(new TableCellComponent("coord", String.format("(%.1f | %.1f)", getX(), getY())));
+        objectInfos.add(new TableCellComponent("coord", String.format("(%.1f | %.1f)", getGUI_X(), getGUI_Y())));
         return objectInfos;
     }
 }
