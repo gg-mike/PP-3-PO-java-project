@@ -31,6 +31,8 @@ public class MainWindow {
     // Toolbar Objects
     public Button toolbar_databaseContentButton, toolbar_switchRunningButton, toolbar_resetButton;
     public CheckMenuItem display_labelCheckbox, display_vehicleAtJunctionsCheckbox, display_vehicleWaitingAtJunctionsCheckbox, simulation_fullStopCheckbox;
+    public MenuButton toolbar_simulationMenuButton, toolbar_displayMenuButton;
+    public Slider toolbar_simulationSpeedSlider;
 
     // "Map" Tab Objects
     private ContextMenu map_tokenContextMenu;
@@ -70,14 +72,22 @@ public class MainWindow {
 
     private void toolbar_init() {
         toolbar_switchRunningButton.setDisable(false);
+        toolbar_displayMenuButton.setDisable(false);
+        toolbar_simulationMenuButton.setDisable(false);
         display_labelCheckbox.setSelected(true);
         display_vehicleAtJunctionsCheckbox.setSelected(false);
         display_vehicleWaitingAtJunctionsCheckbox.setSelected(false);
         simulation_fullStopCheckbox.setSelected(true);
+        toolbar_simulationSpeedSlider.setDisable(false);
+        toolbar_simulationSpeedSlider.valueProperty().addListener((o, oldValue, newValue) -> Database.changeSimulationSpeed(newValue.doubleValue()));
     }
 
     private void toolbar_reset() {
         toolbar_switchRunningButton.setDisable(true);
+        toolbar_displayMenuButton.setDisable(true);
+        toolbar_simulationMenuButton.setDisable(true);
+        toolbar_simulationSpeedSlider.setDisable(true);
+        toolbar_simulationSpeedSlider.setValue(1d);
     }
 
     public void toolbar_databaseContentController() {
@@ -259,19 +269,19 @@ public class MainWindow {
             switch (Database.getAppObjects().get(id).getType()) {
                 case CA, MA -> {
                     info_optionButtonSet(info_option1Button, id, "Delete",
-                            true, false, this::removeVehicle);
+                            true, false, this::removeVehicleEventController);
                     info_optionButtonSet(info_option2Button, id, "Force Emergency Stop",
                             true, false, event1 -> ((Aircraft) Database.getAppObjects().get(id)).emergencyStop());
                 }
                 case AC -> {
                     info_optionButtonSet(info_option1Button, id, "Delete",
-                            true, false, this::removeVehicle);
+                            true, false, this::removeVehicleEventController);
                     info_optionButtonSet(info_option2Button, id, "Deploy Military Aircraft",
                             true, false, this::add_initDeployMA);
                 }
                 case CS -> {
                     info_optionButtonSet(info_option1Button, id, "Delete",
-                            true, false, this::removeVehicle);
+                            true, false, this::removeVehicleEventController);
                     info_optionButtonSet(info_option2Button, null, null, false, true, null);
                 }
                 default -> {
@@ -548,10 +558,11 @@ public class MainWindow {
 
     // Others functionality
 
-    private void removeVehicle(MouseEvent event) {
+    private void removeVehicleEventController(MouseEvent event) {
         String key = ((Node) event.getSource()).getId();
         if (Database.getAppObjects().containsKey(key)) {
             objectsGroup.getChildren().remove(Database.getAppObjects().get(key).getShape());
+            objectsGroup.getChildren().remove(((MovingObject) Database.getAppObjects().get(key)).getLabel());
             switch (Database.getAppObjects().get(key).getType()) {
                 case CA, MA -> Database.getAircrafts().remove(key);
                 case CS, AC -> Database.getShips().remove(key);
@@ -560,6 +571,4 @@ public class MainWindow {
             Database.getAppObjects().remove(key);
             info_reset();
         }
-    }
-
-}
+    }}

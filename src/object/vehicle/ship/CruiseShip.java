@@ -26,8 +26,8 @@ public final class CruiseShip extends Ship {
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("passengers", String.format("%d/%d", currPassengerN, maxPassengerN)));
-        objectInfos.add(new TableCellComponent("company", company));
+        objectInfos.add(new TableCellComponent("Passengers", String.format("%d/%d", currPassengerN, maxPassengerN)));
+        objectInfos.add(new TableCellComponent("Company", company));
         return objectInfos;
     }
 }

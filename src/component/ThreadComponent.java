@@ -6,9 +6,8 @@ package component;
 public class ThreadComponent {
     private boolean running;
     private boolean exit = false;
-    private final double fps;
-    private double prevTime;
-    private double deltaTime;
+    private final double fps, deltaTime;
+    private double prevTime, simulationSpeed = 1d;
 
     /**
      * Constructor
@@ -18,25 +17,34 @@ public class ThreadComponent {
     public ThreadComponent(boolean running, double fps) {
         this.running = running;
         this.fps = fps;
-        this.prevTime = System.currentTimeMillis();
-        this.deltaTime = System.currentTimeMillis();
+        this.deltaTime = 1d / fps * 1000d;
     }
 
     /**
-     * Evaluates if enough time passed from the last frame
-     * @return true if is frame
+     * Start clock (prevTime = now)
      */
-    public boolean isFrame() {
-        boolean go = running && (deltaTime - prevTime >= 1 / fps * 1000);
-        if (go) {
-            prevTime = System.currentTimeMillis();
-            deltaTime = System.currentTimeMillis();
-            return true;
+    public void startClock() {
+        prevTime = System.currentTimeMillis();
+    }
+
+    /**
+     * End clock and force thread to sleep remaining time
+     */
+    public void endClock() {
+        double end = System.currentTimeMillis();
+        try {
+            long sleepTime = (long) ((deltaTime / simulationSpeed - (end - prevTime)));
+            Thread.sleep((sleepTime < 0)? 0 : sleepTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        else {
-            deltaTime = System.currentTimeMillis();
-            return false;
-        }
+    }
+
+    /**
+     * @return running (false if thread is paused)
+     */
+    public boolean isRunning() {
+        return running;
     }
 
     /**
@@ -72,5 +80,9 @@ public class ThreadComponent {
      */
     public double getFPS() {
         return fps;
+    }
+
+    public void setSimulationSpeed(double simulationSpeed) {
+        this.simulationSpeed = simulationSpeed;
     }
 }

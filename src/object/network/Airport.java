@@ -32,8 +32,8 @@ public class Airport extends Junction {
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("isCivil", Boolean.toString(getId().charAt(2) != 'M')));
-        objectInfos.add(new TableCellComponent("capacity", Integer.toString(capacity)));
+        objectInfos.add(new TableCellComponent("Is civilian airport?", Boolean.toString(getId().charAt(2) != 'M')));
+        objectInfos.add(new TableCellComponent("Capacity", Integer.toString(capacity)));
         return objectInfos;
     }
 }

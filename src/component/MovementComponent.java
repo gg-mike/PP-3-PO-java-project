@@ -95,15 +95,14 @@ public class MovementComponent {
      * Set heading of the object
      */
     private void setHeading() {
-        double roundX = Utility.Math.closestMultiple(x, 50);
-        double roundY = Utility.Math.closestMultiple(y, 50);
-        if (roundX == destX) {
-            if (roundY < destY) heading = Heading.S;
-            else heading = Heading.N;
-        }
-        else if (roundY == destY) {
-            if (roundX> destX) heading = Heading.W;
-            else heading = Heading.E;
+        double angle = Math.toDegrees(Math.atan2(destY - y, destX - x) - Math.atan2(-100, 0));
+        int roundAngle = Utility.Math.closestMultiple(angle, 90);
+        if (roundAngle < 0) roundAngle += 360;
+        switch (roundAngle) {
+           case 0 -> heading = Heading.N;
+           case 90 -> heading = Heading.E;
+           case 180 -> heading = Heading.S;
+           default -> heading = Heading.W;
         }
     }
 
@@ -147,6 +146,8 @@ public class MovementComponent {
         if (destData.size() == 2)
             setDest(destData.get(0), destData.get(1));
         else {
+            x = destData.get(0);
+            y = destData.get(1);
             destX = destData.get(0);
             destY = destData.get(1);
             setDest(destData.get(2), destData.get(3));
@@ -186,5 +187,18 @@ public class MovementComponent {
                 x = prevDestX - offset;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "MovementComponent{" +
+                "heading=" + heading +
+                ", speed=" + speed +
+                ", offset=" + offset +
+                ", x=" + x +
+                ", y=" + y +
+                ", destX=" + destX +
+                ", destY=" + destY +
+                '}';
     }
 }

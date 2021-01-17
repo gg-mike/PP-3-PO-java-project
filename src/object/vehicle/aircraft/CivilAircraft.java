@@ -79,7 +79,7 @@ public final class CivilAircraft extends Aircraft {
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("passengers", String.format("%d/%d", currPassengerN, maxPassengerN)));
+        objectInfos.add(new TableCellComponent("Passengers", String.format("%d/%d", currPassengerN, maxPassengerN)));
         return objectInfos;
     }
 }

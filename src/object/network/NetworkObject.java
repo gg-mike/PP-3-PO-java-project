@@ -56,8 +56,8 @@ public abstract class NetworkObject extends AppObject {
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("using", using.toString()));
-        objectInfos.add(new TableCellComponent("isOpened", Boolean.toString(isOpened)));
+        objectInfos.add(new TableCellComponent("Vehicles using", using.toString()));
+        objectInfos.add(new TableCellComponent("Is open?", Boolean.toString(isOpened)));
         return objectInfos;
     }
 }

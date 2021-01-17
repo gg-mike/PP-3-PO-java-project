@@ -141,6 +141,11 @@ public class Database {
             ((MovingObject) appObjects.get(threadKey)).stop();
     }
 
+    public static void changeSimulationSpeed(double newSimulationSpeed) {
+        for (String threadKey: threads.keySet())
+            ((MovingObject) appObjects.get(threadKey)).changeSimulationSpeed(newSimulationSpeed);
+    }
+
     /**
      * End specific thread and remove it from threads HashMap
      * @param id id of MovingObject which is to be ended

@@ -60,9 +60,9 @@ public abstract class Aircraft extends MovingObject {
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("stuffN", Integer.toString(stuffN)));
-        objectInfos.add(new TableCellComponent("fuelState", String.format("%.1f/%.1f", fuelState.getKey(), fuelState.getValue())));
-        objectInfos.add(new TableCellComponent("airport action", airport_action.toString()));
+        objectInfos.add(new TableCellComponent("Stuff number", Integer.toString(stuffN)));
+        objectInfos.add(new TableCellComponent("Fuel state", String.format("%.1f/%.1f", fuelState.getKey(), fuelState.getValue())));
+        objectInfos.add(new TableCellComponent("Airport action", airport_action.toString()));
         return objectInfos;
     }
 }

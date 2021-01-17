@@ -7,4 +7,5 @@ public interface Movable {
     void switchRunning();
     void stop();
     void end();
+    void changeSimulationSpeed(double newSimulationSpeed);
 }

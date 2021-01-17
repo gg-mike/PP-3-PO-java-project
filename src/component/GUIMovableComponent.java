@@ -31,7 +31,7 @@ public class GUIMovableComponent extends GUIComponent {
      * Update stroke color
      * @param stroke stroke color (null - reset to default)
      * @param positionData positionData from MovementComponent (x, y, angle)
-     * @param moving state == MOVE
+     * @param moving state == MOVING || CONNECTING_TO_TRAFFIC_*
      * @param waiting state == WAITING_*
      */
     public void update(Color stroke, ArrayList<Double> positionData, boolean moving, boolean waiting) {

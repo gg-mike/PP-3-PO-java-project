@@ -92,9 +92,9 @@ public class Track extends NetworkObject {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
         objectInfos.remove(1);
         objectInfos.remove(2);
-        objectInfos.add(new TableCellComponent("direction", Integer.toString(direction)));
-        objectInfos.add(new TableCellComponent("length", String.format("%.0f", len)));
-        objectInfos.add(new TableCellComponent("points", points[0] + ", " + points[1]));
+        objectInfos.add(new TableCellComponent("Direction", Integer.toString(direction)));
+        objectInfos.add(new TableCellComponent("Length", String.format("%.0f", len)));
+        objectInfos.add(new TableCellComponent("Points", points[0] + ", " + points[1]));
         return objectInfos;
     }
 }

@@ -19,13 +19,11 @@ public final class AircraftCarrier extends Ship {
                 String.format("  weaponType: %s\n", weaponType);
     }
 
-    public String getWeaponType() {
-        return weaponType;
-    }
+    public String getWeaponType() { return weaponType; }
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("weaponType", weaponType));
+        objectInfos.add(new TableCellComponent("Weapon type", weaponType));
         return objectInfos;
     }
 

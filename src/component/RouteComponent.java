@@ -16,8 +16,8 @@ public class RouteComponent {
 
     private final Database.ObjectType objectType;
     private State state;
-    private LinkedList<String> mainRoute;
-    private final LinkedList<String> initialMainRoute;
+    private LinkedList<String> mainRoute = new LinkedList<>();
+    private final LinkedList<String> initialMainRoute = new LinkedList<>();
     private RouteType routeType;
     private final RouteType initialRouteType;
 
@@ -38,8 +38,8 @@ public class RouteComponent {
         if (routeType == RouteType.CIRCLES && !mainRoute.getFirst().equals(mainRoute.getLast()))
             mainRoute.add(mainRoute.getFirst());
         this.objectType = objectType;
-        this.initialMainRoute = mainRoute;
-        this.mainRoute = mainRoute;
+        this.initialMainRoute.addAll(mainRoute);
+        this.mainRoute.addAll(mainRoute);
         this.initialRouteType = routeType;
         this.routeType = routeType;
     }
@@ -56,7 +56,7 @@ public class RouteComponent {
         if (firstTime) {
             double destX = Database.getAppObjects().get(dest).getGUI_X();
             double destY = Database.getAppObjects().get(dest).getGUI_Y();
-            state = (Database.getAppObjects().get(dest).getId().startsWith("AP")) ? State.WAITING_AIRPORT : State.WAITING_JUNCTION;
+            state = (dest.startsWith("AP")) ? State.WAITING_AIRPORT : State.WAITING_JUNCTION;
             if (intermediateRoute.size() != 0) {
                 String nextDestId = intermediateRoute.getFirst();
                 double nextDestX = Database.getAppObjects().get(nextDestId).getGUI_X();
@@ -131,11 +131,12 @@ public class RouteComponent {
                 mainRoute.clear();
                 mainRoute.add(tmpDest);
                 mainRoute.add(initialMainRoute.getFirst());
-                return initRoute(false);
+                return initRoute(true);
             }
             case AFTER_CONNECTING -> {
                 routeType = initialRouteType;
-                mainRoute = initialMainRoute;
+                mainRoute.clear();
+                mainRoute.addAll(initialMainRoute);
                 return initRoute(false);
             }
             case CIRCLES -> {
@@ -167,9 +168,13 @@ public class RouteComponent {
     public boolean isMainRouteStop() { return mainInIntermediate.contains(intermediateRoute.size() + 1); }
 
     /**
-     * @return state == MOVING
+     * @return state == MOVING || CONNECTING_TO_TRAFFIC_*
      */
-    public boolean isMoving() { return state == State.MOVING; }
+    public boolean isMoving() {
+        return  state == State.MOVING ||
+                state == State.CONNECTING_TO_TRAFFIC_X ||
+                state == State.CONNECTING_TO_TRAFFIC_Y;
+    }
 
     /**
      * @return state == WAITING_*
@@ -192,6 +197,15 @@ public class RouteComponent {
      */
     public void setState(State state) { this.state = state; }
 
+
+    /**
+     * Set new state for the object based on destination
+     */
+    public void setState() {
+        if (dest.startsWith("AP")) state = State.WAITING_AIRPORT;
+        else if (dest.startsWith("JU")) state = State.WAITING_JUNCTION;
+    }
+
     /**
      * Get main route
      * @return mainRoute
@@ -209,6 +223,14 @@ public class RouteComponent {
      * @return dest
      */
     public String getDest() { return dest; }
+
+    /**
+     * Set new destination for the object
+     * @param dest new destination
+     */
+    public void setDest(String dest) {
+        this.dest = dest;
+    }
 
     /**
      * Get temporary destination id (used by emergency and connecting to the route)

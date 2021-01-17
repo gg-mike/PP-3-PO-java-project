@@ -53,7 +53,9 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
         switch (routeComponent.getState()) {
             case CONNECTING_TO_TRAFFIC_X -> {
                 if (movementComponent.arrived()) {
-                    movementComponent.setDest(new ArrayList<>(Arrays.asList(getGUI_X(), getGUI_Y(), getGUI_X(), Database.getAppObjects().get(routeComponent.getTmpDest()).getGUI_Y())));
+                    double destX = Database.getAppObjects().get(routeComponent.getTmpDest()).getGUI_X();
+                    double destY = Database.getAppObjects().get(routeComponent.getTmpDest()).getGUI_Y();
+                    movementComponent.setDest(new ArrayList<>(Arrays.asList(destX, destY)));
                     routeComponent.setState(RouteComponent.State.CONNECTING_TO_TRAFFIC_Y);
                 }
                 else {
@@ -63,10 +65,8 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
             }
             case CONNECTING_TO_TRAFFIC_Y -> {
                 if (movementComponent.arrived()) {
-                    if (Database.getAppObjects().get(routeComponent.getTmpDest()).getId().startsWith("AP"))
-                        routeComponent.setState(RouteComponent.State.WAITING_AIRPORT);
-                    else if (Database.getAppObjects().get(routeComponent.getTmpDest()).getId().startsWith("JU"))
-                        routeComponent.setState(RouteComponent.State.CONNECTING_TO_TRAFFIC_Y);
+                    routeComponent.setDest(routeComponent.getTmpDest());
+                    routeComponent.setState();
                     routeComponent.setRouteType(RouteComponent.RouteType.CONNECTING);
                     generateNewRoute();
                 }
@@ -77,10 +77,7 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
             }
             case MOVING -> {
                 if (movementComponent.arrived()) {
-                    if (Database.getAppObjects().get(routeComponent.getDest()).getId().startsWith("AP"))
-                        routeComponent.setState(RouteComponent.State.WAITING_AIRPORT);
-                    else if (Database.getAppObjects().get(routeComponent.getDest()).getId().startsWith("JU"))
-                        routeComponent.setState(RouteComponent.State.WAITING_JUNCTION);
+                    routeComponent.setState();
                     if (routeComponent.getUsedTrack() != null)
                         if (!((Track) Database.getAppObjects().get(routeComponent.getUsedTrack())).removeUsing(getId()))
                             System.out.println("Track " + routeComponent.getUsedTrack() + " doesn't contain vehicle with this id " + getId());
@@ -166,10 +163,17 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     public synchronized void end() { threadComponent.setExit(true); }
 
     @Override
+    public void changeSimulationSpeed(double newSimulationSpeed) {
+        threadComponent.setSimulationSpeed(newSimulationSpeed);
+    }
+
+    @Override
     public void run() {
         while (!threadComponent.isExit()) {
-            if (threadComponent.isFrame())
+            threadComponent.startClock();
+            if (threadComponent.isRunning())
                 move();
+            threadComponent.endClock();
         }
     }
 
@@ -185,11 +189,11 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = super.getObjectInfo();
-        objectInfos.add(new TableCellComponent("state", routeComponent.getState().toString()));
-        objectInfos.add(new TableCellComponent("speed", Double.toString(movementComponent.getSpeed())));
-        objectInfos.add(new TableCellComponent("heading", movementComponent.getHeading().toString()));
-        objectInfos.add(new TableCellComponent("route", routeComponent.getMainRoute().toString()));
-        objectInfos.add(new TableCellComponent("destId", routeComponent.getDest()));
+        objectInfos.add(new TableCellComponent("State", routeComponent.getState().toString()));
+        objectInfos.add(new TableCellComponent("Speed", Double.toString(movementComponent.getSpeed())));
+        objectInfos.add(new TableCellComponent("Heading", movementComponent.getHeading().toString()));
+        objectInfos.add(new TableCellComponent("Main route", routeComponent.getMainRoute().toString()));
+        objectInfos.add(new TableCellComponent("Destination", routeComponent.getDest()));
         return objectInfos;
     }
 }

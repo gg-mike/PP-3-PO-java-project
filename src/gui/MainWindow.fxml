@@ -23,15 +23,16 @@
         <Separator orientation="VERTICAL" />
         <Button fx:id="toolbar_switchRunningButton" disable="true" mnemonicParsing="false" onAction="#toolbar_switchRunningController" prefWidth="30.0" text="⏯" />
         <Button fx:id="toolbar_resetButton" mnemonicParsing="false" onAction="#toolbar_resetMapController" prefWidth="100.0" text="Reset Map" />
+      <Slider fx:id="toolbar_simulationSpeedSlider" blockIncrement="0.5" disable="true" majorTickUnit="0.5" max="2.0" min="0.5" minorTickCount="0" prefWidth="100.0" showTickLabels="true" snapToTicks="true" value="1.0" />
         <Separator orientation="VERTICAL" />
-        <MenuButton mnemonicParsing="false" prefWidth="100.0" text="Display" textAlignment="CENTER">
+        <MenuButton fx:id="toolbar_displayMenuButton" disable="true" mnemonicParsing="false" prefWidth="100.0" text="Display" textAlignment="CENTER">
             <items>
                 <CheckMenuItem fx:id="display_labelCheckbox" mnemonicParsing="false" onAction="#display_labelController" selected="true" text="Labels" />
                 <CheckMenuItem fx:id="display_vehicleAtJunctionsCheckbox" mnemonicParsing="false" onAction="#display_vehicleAtJunctionsController" text="Vehicles visible at junctions" />
                 <CheckMenuItem fx:id="display_vehicleWaitingAtJunctionsCheckbox" mnemonicParsing="false" onAction="#display_vehicleWaitingAtJunctionsController" text="Vehicles visible waiting at junctions" />
             </items>
         </MenuButton>
-        <MenuButton mnemonicParsing="false" prefWidth="100.0" text="Simulation">
+        <MenuButton fx:id="toolbar_simulationMenuButton" disable="true" mnemonicParsing="false" prefWidth="100.0" text="Simulation">
             <items>
                 <CheckMenuItem fx:id="simulation_fullStopCheckbox" mnemonicParsing="false" onAction="#simulation_fullStopController" text="Full stop at intermediate airports" />
             </items>

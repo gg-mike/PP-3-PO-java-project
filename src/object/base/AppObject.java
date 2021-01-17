@@ -41,8 +41,8 @@ public abstract class AppObject {
 
     public ObservableList<TableCellComponent> getObjectInfo() {
         ObservableList<TableCellComponent> objectInfos = FXCollections.observableArrayList();
-        objectInfos.add(new TableCellComponent("ID", getId()));
-        objectInfos.add(new TableCellComponent("coord", String.format("(%.1f | %.1f)", getGUI_X(), getGUI_Y())));
+        objectInfos.add(new TableCellComponent("Identification", getId()));
+        objectInfos.add(new TableCellComponent("Coordinates", String.format("(%.1f | %.1f)", getGUI_X(), getGUI_Y())));
         return objectInfos;
     }
 }
