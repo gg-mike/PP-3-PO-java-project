@@ -82,6 +82,9 @@ public class ThreadComponent {
         return fps;
     }
 
+    /**
+     * @param simulationSpeed speed of the simulation (1 - normal)
+     */
     public void setSimulationSpeed(double simulationSpeed) {
         this.simulationSpeed = simulationSpeed;
     }

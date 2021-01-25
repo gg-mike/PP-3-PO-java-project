@@ -50,10 +50,61 @@
                 </Group>
             </Pane>
         </Tab>
-        <Tab text="Help" />
+        <Tab text="Help">
+            <ScrollPane>
+                <GridPane prefHeight="449.0" prefWidth="585.0" vgap="5.0">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="283.0" minWidth="10.0" prefWidth="188.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="398.0" minWidth="10.0" prefWidth="391.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" valignment="CENTER" vgrow="NEVER" />
+
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="NEVER" />
+                    </rowConstraints>
+                    <Text style="-fx-font-size: 14; -fx-font-weight: bold" text="Init database" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Text style="-fx-font-size: 14; -fx-font-weight: bold" text="Reset map" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Text style="-fx-font-size: 14; -fx-font-weight: bold" text="Info" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <Text style="-fx-font-size: 14; -fx-font-weight: bold" text="Add" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <Text style="-fx-font-size: 14; -fx-font-weight: bold" text="Adding new vehicle" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+
+                    <Text style="-fx-font-size: 14" text="Init database and start the simulation." GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Text style="-fx-font-size: 14" text="Reset map and fit it to the resized window." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <Text style="-fx-font-size: 14" text="Contains all the necessary information about vehicle or network object." wrappingWidth="391.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <Text style="-fx-font-size: 14" text="Creation of a new vehicle." GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                    <Text style="-fx-font-size: 14" text="1. Choose the vehicle type." GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <Text style="-fx-font-size: 14" text="2. Pick a route:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    <Text style="-fx-font-size: 14" text=" - Left click to add the junction (airport) to the route." GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                    <Text style="-fx-font-size: 14" text=" - Right click to delete the junction (airport) from the route." GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                    <Text style="-fx-font-size: 14" text="3. Choose the route type:" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                    <Text style="-fx-font-size: 14" text=" - Once - goes the entire route once" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                    <Text style="-fx-font-size: 14" text=" - Circle - goes from end to start using shortest path" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                    <Text style="-fx-font-size: 14" text=" - There and back - goes the entire route back and forth" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+                    <Text style="-fx-font-size: 14" text="4. Choose parameter values for the vehicle" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                    <Text style="-fx-font-size: 14" text="5. Generate vehicle (Reset if you want to start over)" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+                    <Text style="-fx-font-size: 14" text="6. Add vehicle (Cancel if you want to discard the vehicle)" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+
+                </GridPane>
+
+            </ScrollPane>
+        </Tab>
     </TabPane>
     <TabPane fx:id="rightTabPane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1">
-        <Tab fx:id="info_Tab" disable="true" text="Info">
+        <Tab fx:id="info_Tab" closable="false" disable="true" text="Info">
             <GridPane hgap="10.0" prefHeight="504.0" prefWidth="399.0">
                 <columnConstraints>
                     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -100,7 +151,7 @@
             </TableView>
             </GridPane>
         </Tab>
-        <Tab fx:id="add_Tab" disable="true" text="Add">
+        <Tab fx:id="add_Tab" closable="false" disable="true" text="Add">
             <GridPane alignment="TOP_CENTER" hgap="10.0">
                 <columnConstraints>
                     <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

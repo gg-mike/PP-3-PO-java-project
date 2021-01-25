@@ -7,9 +7,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * Functionality required by different object of the application
+ */
 public class Utility {
 
     public static class Convertors {
+
+        /**
+         * Converts ArrayList to LinkedList
+         * Used for reading json files
+         * @param array ArrayList object to be converted
+         * @return LinkedList consisting of String
+         */
         public static LinkedList<String> array2linkedList(ArrayList<Object> array) {
             LinkedList<String> linkedList = new LinkedList<>();
             for (Object elem : array)
@@ -18,17 +28,31 @@ public class Utility {
         }
     }
 
+    /**
+     * Functionality needed for quick data extraction from json file
+     */
     public static class JSONInfo {
         private static JSONObject jsonObject;
 
+        /**
+         * @param data json object string
+         */
         public static void init(String data) {
             jsonObject = new JSONObject(data);
         }
 
+        /**
+         * @param key json key a single object
+         * @return object specific to the given key
+         */
         public static Object get(String key) {
             return jsonObject.get(key);
         }
 
+        /**
+         * @param key json key for an array
+         * @return array specific to the given key
+         */
         public static ArrayList<Object> getArray(String key) {
             JSONArray jsonArray = jsonObject.getJSONArray(key);
             ArrayList<Object> objects = new ArrayList<>();
@@ -38,6 +62,9 @@ public class Utility {
         }
     }
 
+    /**
+     * Extracts data from id of the object
+     */
     public static class StringInfo {
         private static String stringData;
 
@@ -51,6 +78,9 @@ public class Utility {
 
     }
 
+    /**
+     * Math calculations needed in the application
+     */
     public static class Math {
         private static final Random random = new Random();
 

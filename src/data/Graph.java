@@ -6,7 +6,13 @@ import object.network.Track;
 
 import java.util.*;
 
+/**
+ * Holds all the data about nodes and connections between them
+ */
 class Graph {
+    /**
+     * Single node in the graph, which holds ids of its connections
+     */
     public static class Node {
         public String id;
         public double currWeight = Double.MAX_VALUE;
@@ -19,6 +25,12 @@ class Graph {
 
     private final HashMap<String, Node> nodes = new HashMap<>();
 
+    /**
+     * Constructor
+     * @param nodesId_a airports
+     * @param nodesId_j junctions
+     * @param assignment A - air, W - water
+     */
     public Graph(HashSet<String> nodesId_a, HashSet<String> nodesId_j, char assignment) {
         if (assignment == 'A') {
             for (String nodeId : nodesId_a)
@@ -34,6 +46,9 @@ class Graph {
        createConnections();
     }
 
+    /**
+     * Generate connections for nodes
+     */
     private void createConnections() {
         for (String nodeId : nodes.keySet()) {
             for (String trackId : ((Junction) Database.getAppObjects().get(nodeId)).getTracks().values()) {
@@ -46,11 +61,21 @@ class Graph {
         }
     }
 
+    /**
+     * Reset nodes weight to 0
+     */
     private void resetNodes() {
         for (String nodeId : nodes.keySet())
             nodes.get(nodeId).currWeight = Double.MAX_VALUE;
     }
 
+    /**
+     * Generate route
+     * @param startId start point id
+     * @param endId end point id
+     * @param isCivil should algorithm consider military airports in path-finding
+     * @return route
+     */
     public LinkedList<String> createRoute(String startId, String endId, boolean isCivil) {
         LinkedList<String> route = new LinkedList<>();
 
@@ -97,6 +122,11 @@ class Graph {
         return route;
     }
 
+    /**
+     * Calculate route length
+     * @param route route points
+     * @return length of the route
+     */
     private double calculateLength(LinkedList<String> route) {
         double len = 0;
         for (int i = 0; i < route.size() - 1; i++) {
@@ -107,6 +137,12 @@ class Graph {
         return len;
     }
 
+    /**
+     * Find the closest airport and generate route to this point
+     * @param startId start point id
+     * @param isCivil should algorithm consider military airports in path-finding
+     * @return route
+     */
     public LinkedList<String> getClosestAirport(String startId, boolean isCivil) {
         ArrayList<LinkedList<String>> possibleRoutes = new ArrayList<>();
         ArrayList<Double> routesLens = new ArrayList<>();

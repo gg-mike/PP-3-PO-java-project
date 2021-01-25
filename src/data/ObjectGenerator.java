@@ -6,8 +6,24 @@ import util.Utility;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+/**
+ * Generation of the object's json
+ */
 public class ObjectGenerator {
 
+    /**
+     * Generate json object
+     * @param type vehicle type (0 -> CA, 1 -> MA, 2 -> CS, else -> AC)
+     * @param speed speed of the vehicle
+     * @param route main route points
+     * @param routeType type of route (0 -> ONCE, 1 -> CIRCLES, else -> THERE_END_BACK)
+     * @param stuffN stuff number (needed for CA, MA)
+     * @param maxPassN max passenger number (needed for CA, CS)
+     * @param maxFuel max fuel (needed for CA, MA)
+     * @param weaponType weapon type (needed for MA, AC)
+     * @param company company name (needed for MS)
+     * @return generated json object
+     */
     public static String generateJSON(int type, Integer speed, LinkedList<Pair<Integer, Integer>> route, int routeType,
                                 Integer stuffN, Integer maxPassN, Double maxFuel, String weaponType, String company) {
         return "{ " + getId(type) + ", \"speed\": "+ speed + ", \n" +
@@ -15,6 +31,11 @@ public class ObjectGenerator {
                 getRoute(route, routeType) + " }";
     }
 
+    /**
+     * Generate vehicle id
+     * @param type vehicle type (0 -> CA, 1 -> MA, 2 -> CS, else -> AC)
+     * @return vehicle id
+     */
     private static String getId(int type) {
         String id;
         HashSet<String> vehSet;
@@ -45,6 +66,12 @@ public class ObjectGenerator {
         return "\"id\": " + id;
     }
 
+    /**
+     * Generate route
+     * @param points main route points
+     * @param type route type
+     * @return route
+     */
     private static String getRoute(LinkedList<Pair<Integer, Integer>> points, int type) {
         StringBuilder routeSB = new StringBuilder("[");
 
@@ -65,6 +92,15 @@ public class ObjectGenerator {
         return "\"route\": " + routeSB.substring(0, routeSB.length() - 2) + "] , \"routeType\": " + routeType;
     }
 
+    /**
+     * Generate other parameters values
+     * @param stuffN stuff number (needed for CA, MA)
+     * @param maxPassN max passenger number (needed for CA, CS)
+     * @param maxFuel max fuel (needed for CA, MA)
+     * @param weaponType weapon type (needed for MA, AC)
+     * @param company company name (needed for MS)
+     * @return other parameters values
+     */
     private static String getOtherParams(Integer stuffN, Integer maxPassN, Double maxFuel, String weaponType, String company) {
         String other = "";
         if (stuffN != null)

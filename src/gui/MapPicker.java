@@ -11,8 +11,14 @@ import javafx.util.Pair;
 
 import java.util.LinkedList;
 
+/**
+ * Functionality connected with route picking
+ */
 public class MapPicker {
 
+    /**
+     * Functionality connected with single route token
+     */
     protected static class Token {
         private int index, indexOnPoint;
         private final double x, y;
@@ -37,12 +43,18 @@ public class MapPicker {
             updateLabel();
         }
 
+        /**
+         * Update circle id and coordinates
+         */
         private void updateCircle() {
             this.circle.setId(Integer.toString(index));
             this.circle.setCenterX(x + 15 + 14.5 * indexOnPoint);
             this.circle.setCenterY(y - 15);
         }
 
+        /**
+         * Update label id, text and coordinates
+         */
         private void updateLabel() {
             this.label.setId(Integer.toString(index));
             this.label.setText(Integer.toString(index));
@@ -50,6 +62,12 @@ public class MapPicker {
             this.label.setLayoutY(y - 22.5);
         }
 
+        /**
+         * Compare (x, y) coordinates with token's coordinates
+         * @param x x coordinate
+         * @param y y coordinate
+         * @return this.x == x && this.y == y
+         */
         public boolean compareCoord(double x, double y) {
             return this.x == x && this.y == y;
         }
@@ -65,6 +83,12 @@ public class MapPicker {
         mainGroup.getChildren().setAll(circleGroup, labelGroup);
     }
 
+    /**
+     * Add new token with a given coordinates
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return new token's label (null if tokens.size() >= 10)
+     */
     public static Label addToken(double x, double y) {
         if (tokens.size() < 10) {
             if (tokens.size() == 0 || !tokens.getLast().compareCoord(x, y)) {
@@ -84,6 +108,10 @@ public class MapPicker {
         return null;
     }
 
+    /**
+     * Remove a token with a given index
+     * @param index index of the token which is to be removed
+     */
     public static void remove(int index) {
         if (tokens.size() > index) {
             Token removedToken = tokens.remove(index);
@@ -114,6 +142,9 @@ public class MapPicker {
         }
     }
 
+    /**
+     * Clear all tokens
+     */
     public static void clear() {
         circleGroup.getChildren().clear();
         labelGroup.getChildren().clear();
@@ -121,6 +152,10 @@ public class MapPicker {
         mainGroup.getChildren().setAll(circleGroup, labelGroup);
     }
 
+    /**
+     * Get point coordinates of the tokens
+     * @return points
+     */
     public static LinkedList<Pair<Integer, Integer>> getPoints() {
         LinkedList<Pair<Integer, Integer>> points = new LinkedList<>();
         for (Token token: tokens)
@@ -128,5 +163,9 @@ public class MapPicker {
         return points;
     }
 
+    /**
+     * Get size of tokens
+     * @return size
+     */
     public static int getTokensSize() { return tokens.size(); }
 }

@@ -70,6 +70,9 @@ public class MainWindow {
 
     // Toolbar Functionality
 
+    /**
+     * Init toolbar section
+     */
     private void toolbar_init() {
         toolbar_switchRunningButton.setDisable(false);
         toolbar_displayMenuButton.setDisable(false);
@@ -82,6 +85,9 @@ public class MainWindow {
         toolbar_simulationSpeedSlider.valueProperty().addListener((o, oldValue, newValue) -> Database.changeSimulationSpeed(newValue.doubleValue()));
     }
 
+    /**
+     * Reset toolbar section
+     */
     private void toolbar_reset() {
         toolbar_switchRunningButton.setDisable(true);
         toolbar_displayMenuButton.setDisable(true);
@@ -90,6 +96,9 @@ public class MainWindow {
         toolbar_simulationSpeedSlider.setValue(1d);
     }
 
+    /**
+     * Init/Reset database
+     */
     public void toolbar_databaseContentController() {
         if (Database.isInit()) {
             resetDatabase();
@@ -101,6 +110,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Init database with json files
+     */
     private void initDatabase() {
         Database.init(new String[]{"./data/net.json", "./data/veh.json"}, new String[][] {
                 {"junctions", "airports", "tracks"},
@@ -116,11 +128,17 @@ public class MainWindow {
         };
     }
 
+    /**
+     * Init all application nodes
+     */
     private void initNodes() {
         initNetNodes();
         initVehNodes();
     }
 
+    /**
+     * Init network nodes
+     */
     private void initNetNodes() {
         for (String id: Database.getTracks()) {
             Database.getAppObjects().get(id).getShape().setOnMouseClicked(this::map_objectChosenController);
@@ -136,6 +154,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Init vehicle nodes
+     */
     private void initVehNodes() {
         for (String id: Database.getShips()) {
             Database.getAppObjects().get(id).getShape().setOnMouseClicked(this::map_objectChosenController);
@@ -149,6 +170,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Clear the content of the database
+     */
     private void resetDatabase() {
         if (Database.isInit()) {
             Database.clear();
@@ -159,8 +183,14 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Switch running of the threads (Database.switchRunningThreads())
+     */
     public void toolbar_switchRunningController() { Database.switchRunningThreads(); }
 
+    /**
+     * Reset map to its original position and reset if necessary
+     */
     public void toolbar_resetMapController() {
         map_group.getTransforms().clear();
         scaleFactor = 1.0;
@@ -172,24 +202,36 @@ public class MainWindow {
         map_group.setLayoutY((((Pane) map_group.getParent()).getHeight() - map_rect.getHeight()) / 2);
     }
 
+    /**
+     * Set MovingObject label visibility
+     */
     public void display_labelController() {
         for (String id : Database.getAppObjects().keySet())
             if (Database.getAppObjects().get(id) instanceof MovingObject)
                 ((MovingObject) Database.getAppObjects().get(id)).setLabelVisible(display_labelCheckbox.isSelected());
     }
 
+    /**
+     * Set MovingObject visibility at junctions
+     */
     public void display_vehicleAtJunctionsController() {
         for (String id : Database.getAppObjects().keySet())
             if (Database.getAppObjects().get(id) instanceof MovingObject)
                 ((MovingObject) Database.getAppObjects().get(id)).setVisibleAtJunction(display_vehicleAtJunctionsCheckbox.isSelected());
     }
 
+    /**
+     * Set MovingObject visibility waiting at junctions
+     */
     public void display_vehicleWaitingAtJunctionsController() {
         for (String id : Database.getAppObjects().keySet())
             if (Database.getAppObjects().get(id) instanceof MovingObject)
                 ((MovingObject) Database.getAppObjects().get(id)).setVisibleWaitingAtJunction(display_vehicleWaitingAtJunctionsCheckbox.isSelected());
     }
 
+    /**
+     * Set CA full stop on intermediate airports
+     */
     public void simulation_fullStopController() {
         for (String id : Database.getAircrafts())
             if (Database.getAppObjects().get(id) instanceof CivilAircraft)
@@ -198,6 +240,9 @@ public class MainWindow {
 
     // "Map" Tab Functionality
 
+    /**
+     * Init map section
+     */
     private void map_init() {
         objectsGroup = new Group();
         initNodes();
@@ -208,11 +253,18 @@ public class MainWindow {
         map_tokenContextMenu.getItems().add(delete);
     }
 
+    /**
+     * Reset map section
+     */
     private void map_reset() {
         objectsGroup.getChildren().clear();
         map_group.getTransforms().clear();
     }
 
+    /**
+     * Rescale map with a given pivot
+     * @param event ScrollEvent
+     */
     public void map_zoomController(ScrollEvent event) {
         Scale scale = new Scale();
         double prevScaleFactor = scaleFactor;
@@ -224,6 +276,10 @@ public class MainWindow {
         map_group.getTransforms().add(scale);
     }
 
+    /**
+     * Drag map
+     * @param event MouseEvent
+     */
     public void map_dragController(MouseEvent event) {
         Translate translate = new Translate();
         translate.setX(map_group.getTranslateX() + (event.getX() - mouseInitPosX));
@@ -231,11 +287,19 @@ public class MainWindow {
         map_group.getTransforms().add(translate);
     }
 
+    /**
+     * Set starting coordinates for map dragging
+     * @param dragEvent MouseEvent
+     */
     public void map_startDragController(MouseEvent dragEvent) {
         mouseInitPosX = dragEvent.getX();
         mouseInitPosY = dragEvent.getY();
     }
 
+    /**
+     * If isMapPick == true then try to add the token else init info section
+     * @param event MouseEvent
+     */
     public void map_objectChosenController(MouseEvent event) {
         if (isMapPick) {
             NetworkObject networkObject = (NetworkObject) Database.getAppObjects().get(((Node)event.getSource()).getId());
@@ -256,10 +320,13 @@ public class MainWindow {
         else info_init(((Node)event.getSource()).getId(), (String) ((Node)event.getSource()).getUserData());
     }
 
-    // "Help" Tab Functionality
-
     // "Info" Tab Functionality
 
+    /**
+     * Init info section
+     * @param id object's id
+     * @param userData userData of the event
+     */
     private void info_init(String id, String userData) {
         if (Database.isInit()) {
             info_Tab.setDisable(false);
@@ -294,6 +361,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Reset info section
+     */
     private void info_reset() {
         tableRefresher.stop();
         info_nameLabel.setText("");
@@ -304,6 +374,10 @@ public class MainWindow {
         info_Tab.setDisable(true);
     }
 
+    /**
+     * Init object's shape in the info section
+     * @param id object's id
+     */
     private void info_PaneSet(String id) {
         if (id.startsWith("TR"))
             info_Pane.getChildren().setAll(GUIComponent.getShapeBase(id,
@@ -320,6 +394,15 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Setup for info section button
+     * @param button button reference
+     * @param id button id
+     * @param text button text
+     * @param isVisible visibility of the button
+     * @param isDisable whether the button is disabled
+     * @param eventHandler functionality of the button
+     */
     private void info_optionButtonSet(Button button, String id, String text, boolean isVisible, boolean isDisable,
                                       javafx.event.EventHandler<? super javafx.scene.input.MouseEvent> eventHandler) {
         button.setId(id);
@@ -331,6 +414,9 @@ public class MainWindow {
 
     // "Add"  Tab Functionality
 
+    /**
+     * Init add section
+     */
     private void add_init() {
         add_vehicleTypeComboBox.getItems().setAll("Civil Aircraft", "Military Aircraft", "Cruise Ship", "Aircraft Carrier");
         add_vehicleTypeComboBox.getSelectionModel().selectFirst();
@@ -345,11 +431,18 @@ public class MainWindow {
         add_Tab.setDisable(false);
     }
 
+    /**
+     * Init add section for MA deployment
+     * @param event MouseEvent
+     */
     private void add_initDeployMA(MouseEvent event) {
         acId = ((Node) event.getSource()).getId();
         add_resetDeployMA(((AircraftCarrier) Database.getAppObjects().get(acId)).getWeaponType());
     }
 
+    /**
+     * Reset add section
+     */
     private void add_reset() {
         add_resetContent();
         add_interfaceAC();
@@ -358,6 +451,11 @@ public class MainWindow {
         add_saveButton.setVisible(false);
         add_Tab.setDisable(true);
     }
+
+    /**
+     * Reset add section for MA deployment
+     * @param weaponType weapon type of the AC
+     */
     private void add_resetDeployMA(String weaponType) {
         isDeployMA = true;
         rightTabPane.getSelectionModel().select(add_Tab);
@@ -369,6 +467,9 @@ public class MainWindow {
         add_weaponTypeMATextField.setDisable(true);
     }
 
+    /**
+     * Choose the add section interface setup
+     */
     public void add_vehicleTypeChangeController() {
         add_resetContent();
         switch (add_vehicleTypeComboBox.getSelectionModel().getSelectedIndex()) {
@@ -379,6 +480,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Map picking start
+     */
     public void add_pickRouteController() {
         isMapPick = true;
         routeSizeCondition.start();
@@ -397,6 +501,9 @@ public class MainWindow {
         add_saveButton.setVisible(true);
     }
 
+    /**
+     * Discard route in MapPicker
+     */
     public void add_discardController() {
         MapPicker.clear();
         add_generateButton.setDisable(true);
@@ -405,11 +512,17 @@ public class MainWindow {
         add_endPicking();
     }
 
+    /**
+     * Save route from MapPicker
+     */
     public void add_saveController() {
         add_endPicking();
         add_generateButton.setDisable(false);
     }
 
+    /**
+     * End map picking
+     */
     private void add_endPicking() {
         routeSizeCondition.stop();
         objectsGroup.getChildren().clear();
@@ -425,10 +538,17 @@ public class MainWindow {
         toolbar_switchRunningButton.setDisable(false);
     }
 
+    /**
+     * Remove token from route
+     * @param actionEvent ActionEvent
+     */
     public void add_deleteController(ActionEvent actionEvent) {
         MapPicker.remove(Integer.parseInt(((MenuItem) actionEvent.getSource()).getParentPopup().getOwnerNode().getId()));
     }
 
+    /**
+     * Reset add section
+     */
     public void add_resetController() {
         MapPicker.clear();
         add_generateButton.setDisable(true);
@@ -440,6 +560,9 @@ public class MainWindow {
             add_resetDeployMA(add_weaponTypeMATextField.getText());
     }
 
+    /**
+     * Generate new vehicle's json
+     */
     public void add_generateController() {
         switch (add_vehicleTypeComboBox.getSelectionModel().getSelectedIndex()) {
             case 0 -> add_jsonLabel.setText(ObjectGenerator.generateJSON(0, add_speedSpinner.getValue(), MapPicker.getPoints(),
@@ -463,12 +586,18 @@ public class MainWindow {
         add_addButton.setDisable(false);
     }
 
+    /**
+     * Cancel progress in adding new vehicle
+     */
     public void add_cancelController() {
         acId = null;
         isDeployMA = false;
         add_resetContent();
     }
 
+    /**
+     * Add new vehicle to the database
+     */
     public void add_addController() {
         JSONObject jsonObject = new JSONObject(add_jsonLabel.getText());
         if (isDeployMA)
@@ -485,6 +614,9 @@ public class MainWindow {
         add_saveButton.setDisable(true);
     }
 
+    /**
+     * Setup add section for CA
+     */
     private void add_interfaceCA() {
         add_property1Label.setVisible(true);
         add_property2Label.setVisible(true);
@@ -497,6 +629,9 @@ public class MainWindow {
         add_passNCASpinner.setVisible(true);
     }
 
+    /**
+     * Setup add section for MA
+     */
     private void add_interfaceMA() {
         add_property1Label.setVisible(true);
         add_property2Label.setVisible(true);
@@ -509,6 +644,9 @@ public class MainWindow {
         add_weaponTypeMATextField.setVisible(true);
     }
 
+    /**
+     * Setup add section for CS
+     */
     private void add_interfaceCS() {
         add_property1Label.setVisible(true);
         add_property2Label.setVisible(true);
@@ -518,12 +656,18 @@ public class MainWindow {
         add_companyTextField.setVisible(true);
     }
 
+    /**
+     * Setup add section for AC
+     */
     private void add_interfaceAC() {
         add_property1Label.setVisible(true);
         add_property1Label.setText("Weapon type");
         add_weaponTypeACTextField.setVisible(true);
     }
 
+    /**
+     * Reset content of add section
+     */
     private void add_resetContent() {
         add_property1Label.setVisible(false);
         add_property2Label.setVisible(false);
@@ -558,6 +702,10 @@ public class MainWindow {
 
     // Others functionality
 
+    /**
+     * Remove picked vehicle
+     * @param event MouseEvent
+     */
     private void removeVehicleEventController(MouseEvent event) {
         String key = ((Node) event.getSource()).getId();
         if (Database.getAppObjects().containsKey(key)) {
