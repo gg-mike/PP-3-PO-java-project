@@ -14,6 +14,10 @@ public final class CivilAircraft extends Aircraft {
     private int endN = 0;
     private boolean isFullStopIntermediateAirports = false;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public CivilAircraft(String data) {
         super(data);
         Utility.JSONInfo.init(data);
@@ -21,16 +25,25 @@ public final class CivilAircraft extends Aircraft {
         currPassengerN = 0;
     }
 
+    /**
+     * @return true if all passengers deboarded
+     */
     protected boolean deboarding() {
         if (currPassengerN > delta) { currPassengerN -= delta; return false; }
         else { currPassengerN = 0; return true; }
     }
 
+    /**
+     * @return true if all passengers boarded
+     */
     protected boolean boarding() {
         if (currPassengerN + delta < endN) { currPassengerN += delta; return false; }
         else { currPassengerN = endN; return true; }
     }
 
+    /**
+     * Set of operations which need to be performed in case object is on the airport, like: DEBOARDING, BOARDING, REFUEL
+     */
     @Override
     protected void airportActions() {
         if (airport_action == AIRPORT_ACTION.NONE && !(isFullStopIntermediateAirports || routeComponent.isMainRouteStop()))
@@ -67,6 +80,10 @@ public final class CivilAircraft extends Aircraft {
         refuel(20d / fps);
     }
 
+    /**
+     * @param fullStopIntermediateAirports set if aircraft should make a full stop
+     *                                     (deboard and board passengers or just refuel)
+     */
     public void setFullStopIntermediateAirports(boolean fullStopIntermediateAirports) {
         isFullStopIntermediateAirports = fullStopIntermediateAirports;
     }

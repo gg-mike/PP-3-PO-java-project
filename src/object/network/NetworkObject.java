@@ -7,20 +7,34 @@ import object.base.AppObject;
 
 import java.util.HashSet;
 
+/**
+ * Base class for all network objects
+ */
 public abstract class NetworkObject extends AppObject {
     protected volatile HashSet<String> using;
     protected volatile boolean isOpened;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public NetworkObject(String data) {
         super(data);
         using = new HashSet<>();
         isOpened = true;
     }
 
+    /**
+     * @return set of ids for all vehicle which use this object
+     */
     public HashSet<String> getUsing() {
         return using;
     }
 
+    /**
+     * @param vehicleId id of the vehicle to be removed
+     * @return true if successfully removed
+     */
     public synchronized boolean removeUsing(String vehicleId) {
         if (using.contains(vehicleId)) {
             using.remove(vehicleId);
@@ -31,6 +45,10 @@ public abstract class NetworkObject extends AppObject {
             return false;
     }
 
+    /**
+     * @param vehicleId id of the vehicle to be added
+     * @return true if successfully added
+     */
     public synchronized boolean addUsing(String vehicleId) {
         if (isOpened) {
             using.add(vehicleId);
@@ -41,10 +59,16 @@ public abstract class NetworkObject extends AppObject {
             return false;
     }
 
+    /**
+     * @return assignment of the object
+     */
     public char getAssignment() {
         return getId().charAt(2);
     }
 
+    /**
+     * Set of operations which need to be performed every frame (GUI)
+     */
     public void update() { guiComponent.update((isOpened)? null : Color.RED); }
 
     @Override

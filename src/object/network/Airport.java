@@ -7,11 +7,18 @@ import util.Utility;
 public class Airport extends Junction {
     private final int capacity;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public Airport(String data) {
         super(data);
         capacity = (Integer) Utility.JSONInfo.get("capacity");
     }
 
+    /**
+     * @return set of ids for all vehicle which use this object
+     */
     @Override
     public synchronized boolean addUsing(String vehicleId) {
         if (isOpened && using.size() < capacity) {

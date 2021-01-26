@@ -9,6 +9,10 @@ public final class CruiseShip extends Ship {
     private final int maxPassengerN;
     private final String company;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public CruiseShip(String data) {
         super(data);
         Utility.JSONInfo.init(data);

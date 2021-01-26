@@ -14,6 +14,10 @@ public class Track extends NetworkObject {
     private final double len;
     private final String[] points;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public Track(String data) {
         super(data);
         direction = (Utility.StringInfo.getX() == 0 || Utility.StringInfo.getX() == 500) ? 0 : 2;
@@ -24,12 +28,24 @@ public class Track extends NetworkObject {
         len = Utility.Math.dist(getStartGUI_X(), getStartGUI_Y(), getEndGUI_X(), getEndGUI_Y());
     }
 
+    /**
+     * @return direction of the track (2 - two-way, 0/1 - one-way)
+     */
     public int getDirection() { return direction; }
 
+    /**
+     * @param direction new direction for a track (2 - two-way, 0/1 - one-way)
+     */
     public void setDirection(int direction) { this.direction = direction; }
 
+    /**
+     * @return start and end points ids
+     */
     public String[] getPoints() { return points; }
 
+    /**
+     * @return start and end points coordinates
+     */
     private Double[] getPointsCoord() {
         if ((Database.getJunctions().contains(points[0]) || Database.getAirports().contains(points[0])) &&
                 (Database.getJunctions().contains(points[1]) || Database.getAirports().contains(points[1]))) {
@@ -41,6 +57,9 @@ public class Track extends NetworkObject {
             return null;
     }
 
+    /**
+     * Add this track to specific junctions
+     */
     private void addTracksToJunctions() {
         double diffX = getStartGUI_X() - getEndGUI_X();
         double diffY = getStartGUI_Y() - getEndGUI_Y();
@@ -54,6 +73,10 @@ public class Track extends NetworkObject {
         }
     }
 
+    /**
+     * @param vehicleId id of the vehicle to be removed
+     * @return true if successfully removed
+     */
     @Override
     public synchronized boolean removeUsing(String vehicleId) {
         if (using.contains(vehicleId)) {
@@ -64,20 +87,42 @@ public class Track extends NetworkObject {
             return false;
     }
 
+    /**
+     * @param vehicleId id of the vehicle to be added
+     * @return true if successfully added
+     */
     @Override
     public synchronized boolean addUsing(String vehicleId) {
         using.add(vehicleId);
         return true;
     }
 
+    /**
+     * @return x coordinate of the start point of the line
+     */
     public double getStartGUI_X() { return guiComponent.getCoords()[0]; }
+
+    /**
+     * @return x coordinate of the end point of the line
+     */
     public double getEndGUI_X() { return guiComponent.getCoords()[1]; }
+
+    /**
+     * @return y coordinate of the start point of the line
+     */
     public double getStartGUI_Y() { return guiComponent.getCoords()[2]; }
+
+    /**
+     * @return y coordinate of the end point of the line
+     */
     public double getEndGUI_Y() { return guiComponent.getCoords()[3]; }
 
     @Deprecated public double getGUI_X() { return 0; }
     @Deprecated public double getGUI_Y() { return 0; }
 
+    /**
+     * @return length of the track
+     */
     public double getLen() { return len; }
 
     @Override

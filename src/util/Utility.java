@@ -84,6 +84,13 @@ public class Utility {
     public static class Math {
         private static final Random random = new Random();
 
+        /**
+         * Get clamp value for a range [min, max] (val: 34.2, min: 0, max: 25 -> return 25)
+         * @param val numerical value
+         * @param min minimal value
+         * @param max maximal value
+         * @return clamped value
+         */
         public static Number clamp(Number val, Number min, Number max) {
             if (val.doubleValue() < min.doubleValue())
                 return min;
@@ -92,6 +99,12 @@ public class Utility {
             return val;
         }
 
+        /**
+         * Get closest multiple for a given value (val: 33.4, multiple: 50 -> return 50)
+         * @param val numerical value
+         * @param multiple number multiple
+         * @return closest int multiple
+         */
         public static int closestMultiple(Number val, int multiple) {
             double multiplesInVal = val.doubleValue() / multiple;
             int low = (int) (multiple * java.lang.Math.floor(multiplesInVal));
@@ -100,16 +113,36 @@ public class Utility {
             else return high;
         }
 
+        /**
+         * Calculate distance between to points
+         * @param x1 x coordinate for first point
+         * @param y1 y coordinate for first point
+         * @param x2 x coordinate for second point
+         * @param y2 x coordinate for second point
+         * @return distance between points
+         */
         public static double dist(double x1, double y1, double x2, double y2) {
             return java.lang.Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
         }
 
+        /**
+         * Convert value to string with a given width (val: 7, width: 3 -> return "007")
+         * @param val int value
+         * @param width how many digits should where be in a string
+         * @return value with proper width
+         */
         public static String intToString(int val, int width) {
             String valString = String.valueOf(val);
             while (valString.length() < width) valString = String.format("0%s", valString);
             return valString;
         }
 
+        /**
+         * Generate random value from range [min, max]
+         * @param min minimal value
+         * @param max maximal value
+         * @return random value
+         */
         public static int randInt(int min, int max) {
             return random.nextInt((max - min) + 1) + min;
         }

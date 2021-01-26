@@ -13,17 +13,32 @@ import java.util.Arrays;
 public final class MilitaryAircraft extends Aircraft {
     private final String weaponType;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public MilitaryAircraft(String data) {
         super(data);
         Utility.JSONInfo.init(data);
         weaponType = (String) Utility.JSONInfo.get("weaponType");
     }
 
+    /**
+     * Constructor
+     * @param data json file string
+     * @param x x coordinate
+     * @param y y coordinate
+     */
     public MilitaryAircraft(String data, double x, double y) {
         this(data);
         connectToClosestJunction(x, y);
     }
 
+    /**
+     * Find the closest airport for a given coordinates
+     * @param x x coordinate
+     * @param y y coordinate
+     */
     private void connectToClosestJunction(double x, double y) {
         String closestJunction = null;
         double closestDist = Double.MAX_VALUE;
@@ -49,6 +64,9 @@ public final class MilitaryAircraft extends Aircraft {
         routeComponent.setState(RouteComponent.State.CONNECTING_TO_TRAFFIC_X);
     }
 
+    /**
+     * Set of operations which need to be performed in case object is on the airport, like: REFUEL
+     */
     @Override
     protected void airportActions() {
         switch (airport_action) {

@@ -8,6 +8,9 @@ import util.Utility;
 
 import java.util.ArrayList;
 
+/**
+ * Base class for aircrafts
+ */
 public abstract class Aircraft extends MovingObject {
     public enum AIRPORT_ACTION { NONE, EMERGENCY, REFUEL, DEBOARDING, SET_PASS_NUM, BOARDING, READY }
 
@@ -15,6 +18,10 @@ public abstract class Aircraft extends MovingObject {
     protected Pair<Double, Double> fuelState;
     protected AIRPORT_ACTION airport_action = AIRPORT_ACTION.NONE;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public Aircraft(String data) {
         super(data);
         stuffN = (Integer) Utility.JSONInfo.get("stuffN");
@@ -22,6 +29,10 @@ public abstract class Aircraft extends MovingObject {
         fuelState = new Pair<>(((Integer) objects.get(0)).doubleValue(), ((Integer) objects.get(1)).doubleValue());
     }
 
+    /**
+     * Decrease fuel state by delta
+     * @param delta decrement value
+     */
     public void burnFuel(double delta) {
         if (fuelState.getKey() > delta)
             fuelState = new Pair<>(fuelState.getKey() - delta, fuelState.getValue());
@@ -29,6 +40,11 @@ public abstract class Aircraft extends MovingObject {
             fuelState = new Pair<>(0d, fuelState.getValue());
     }
 
+    /**
+     * Increase fuel state by delta
+     * @param delta increment value
+     * @return true if refueled
+     */
     public boolean refuel(double delta) {
         if (fuelState.getKey() + delta < fuelState.getValue()) {
             fuelState = new Pair<>(fuelState.getKey() + delta, fuelState.getValue());
@@ -40,11 +56,17 @@ public abstract class Aircraft extends MovingObject {
         }
     }
 
+    /**
+     * Set of operations which need to be performed in case of the emergency
+     */
     public void emergencyStop() {
         routeComponent.emergency();
         airport_action = AIRPORT_ACTION.EMERGENCY;
     }
 
+    /**
+     * Set of operations which need to be performed in case object is moving
+     */
     @Override
     protected void moveActions() {
         burnFuel(5 / threadComponent.getFPS());

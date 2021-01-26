@@ -12,6 +12,9 @@ import util.Utility;
 
 import java.util.*;
 
+/**
+ * Base class for all moving objects
+ */
 public abstract class MovingObject extends AppObject implements Movable, Runnable {
     public final int fps = 10;
 
@@ -19,6 +22,10 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     protected volatile MovementComponent movementComponent;
     protected volatile RouteComponent routeComponent;
 
+    /**
+     * Constructor
+     * @param data json file string
+     */
     public MovingObject(String data) {
         super(data);
         guiComponent = new GUIMovableComponent(guiComponent);
@@ -27,27 +34,55 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
                 RouteComponent.RouteType.valueOf(((String) Utility.JSONInfo.get("routeType"))), Database.ObjectType.valueOf(getId().substring(0, 2)));
     }
 
+    /**
+     * Init RouteComponent and set destination coordinates for MovementComponent
+     * @param firstTime true if method is called after creating new object
+     */
     public void initRouteComponent(boolean firstTime) {
         movementComponent.setDest(routeComponent.initRoute(firstTime));
     }
 
+    /**
+     * @return label of the object
+     */
     public Label getLabel() { return ((GUIMovableComponent) guiComponent).getLabel(); }
 
+    /**
+     * @param labelVisible set visibility of the label
+     */
     public void setLabelVisible(boolean labelVisible) { ((GUIMovableComponent) guiComponent).setVisibleLabel(labelVisible); }
 
+    /**
+     * @param visibleAtJunction set visibility of the shape at junctions (and airports)
+     */
     public void setVisibleAtJunction(boolean visibleAtJunction) { ((GUIMovableComponent) guiComponent).setShapeVisibleAtJunctions(visibleAtJunction); }
 
+    /**
+     * @param visibleWaitingAtJunction set visibility of the shape waiting at junctions (and airports)
+     */
     public void setVisibleWaitingAtJunction(boolean visibleWaitingAtJunction) { ((GUIMovableComponent) guiComponent).setShapeVisibleWaitingAtJunctions(visibleWaitingAtJunction); }
 
+    /**
+     * Set of operations which need to be performed every frame (GUI)
+     */
     public void update() {
         ((GUIMovableComponent) guiComponent).update(null, movementComponent.getPositionData(),
                 routeComponent.isMoving(), routeComponent.isWaiting());
     }
 
+    /**
+     * Set of operations which need to be performed in case object is moving
+     */
     protected abstract void moveActions();
 
+    /**
+     * Set of operations which need to be performed in case object is on the airport
+     */
     protected abstract void airportActions();
 
+    /**
+     * Set of operations which need to be performed every frame (MovementComponent, RouteComponent)
+     */
     @Override
     public synchronized void move() {
         switch (routeComponent.getState()) {
@@ -144,29 +179,50 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
         }
     }
 
+    /**
+     * New route generation (RouteType == ONCE then end)
+     */
     @Override
     public synchronized void generateNewRoute() {
         movementComponent.setDest(routeComponent.generateNewRoute());
         threadComponent.setExit(routeComponent.getState() == RouteComponent.State.STOP);
     }
 
+    /**
+     * Start thread
+     */
     @Override
     public void start() { threadComponent.setRunning(true); }
 
+    /**
+     * Change thread running to the opposite
+     */
     @Override
     public synchronized void switchRunning() { threadComponent.switchRunning(); }
 
+    /**
+     * Stop thread
+     */
     @Override
     public void stop() { threadComponent.setRunning(false); }
 
+    /**
+     * End thread
+     */
     @Override
     public synchronized void end() { threadComponent.setExit(true); }
 
+    /**
+     * @param newSimulationSpeed speed of the simulation (1 - normal)
+     */
     @Override
     public void changeSimulationSpeed(double newSimulationSpeed) {
         threadComponent.setSimulationSpeed(newSimulationSpeed);
     }
 
+    /**
+     * Run method (from Runnable)
+     */
     @Override
     public void run() {
         while (!threadComponent.isExit()) {
