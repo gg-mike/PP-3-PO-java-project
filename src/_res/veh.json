@@ -1,0 +1,88 @@
+{
+  "aircrafts" : [
+    {
+      "id": "CA-0001", "speed": 50, "stuffN": 5, "maxPassengerN": 100, "fuelState": [200, 200],
+      "route": ["APC0207", "APC0909"], "routeType": "THERE_AND_BACK"
+    },
+    {
+      "id": "CA-0002", "speed": 50, "stuffN": 5, "maxPassengerN": 300, "fuelState": [400, 400],
+      "route": ["APC0408", "APC0503", "APC0305"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "CA-0003", "speed": 50, "stuffN": 5, "maxPassengerN": 100, "fuelState": [200, 200],
+      "route": ["APC0704", "APC0802"], "routeType": "THERE_AND_BACK"
+    },
+    {
+      "id": "CA-0004", "speed": 50, "stuffN": 5, "maxPassengerN": 200, "fuelState": [300, 300],
+      "route": ["APC0909", "APC0305"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "CA-0005", "speed": 50, "stuffN": 5, "maxPassengerN": 100, "fuelState": [200, 200],
+      "route": ["APC0802", "APC0909"], "routeType": "THERE_AND_BACK"
+    },
+    
+    {
+      "id": "MA-0001", "speed": 60, "stuffN": 1, "weaponType": "Rockets", "fuelState": [200, 200],
+      "route": ["APM0302", "APM0406"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "MA-0002", "speed": 55, "stuffN": 2, "weaponType": "Machine Gun", "fuelState": [250, 250],
+      "route": ["APM1008", "APM1003"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "MA-0003", "speed": 60, "stuffN": 1, "weaponType": "Rockets", "fuelState": [200, 200],
+      "route": ["APM0406", "APM1003"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "MA-0004", "speed": 60, "stuffN": 1, "weaponType": "Rockets", "fuelState": [200, 200],
+      "route": ["APM0406", "APM1008"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "MA-0005", "speed": 55, "stuffN": 2, "weaponType": "Machine Gun", "fuelState": [250, 250],
+      "route": ["APM0302", "APM1003"], "routeType": "CIRCLES"
+    }
+  ],
+  "ships" : [
+    {
+      "id": "CS-0001", "speed": 30, "maxPassengerN": 200, "company": "Good Company",
+      "route": ["JUW0101", "JUW1101", "JUW0709"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "CS-0002", "speed": 25, "maxPassengerN": 500, "company": "Good Company",
+      "route": ["JUW0109", "JUW0504", "JUW1106"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "CS-0003", "speed": 20, "maxPassengerN": 1000, "company": "Good Company",
+      "route": ["JUW0201", "JUW1101", "JUW0505"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "CS-0004", "speed": 30, "maxPassengerN": 200, "company": "Good Company",
+      "route": ["JUW0104", "JUW0505", "JUW0709", "JUW0109"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "CS-0005", "speed": 20, "maxPassengerN": 1000, "company": "Good Company",
+      "route": ["JUW1101", "JUW0109"], "routeType": "THERE_AND_BACK"
+    },
+    
+    {
+      "id": "AC-0001", "speed": 15, "weaponType": "Rockets",
+      "route": ["JUW0705", "JUW1104", "JUW1106"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "AC-0002", "speed": 15, "weaponType": "Machine Gun",
+      "route": ["JUW0505", "JUW0201", "JUW1101"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "AC-0003", "speed": 15, "weaponType": "Rockets",
+      "route": ["JUW0109", "JUW0505"], "routeType": "THERE_AND_BACK"
+    },
+    {
+      "id": "AC-0004", "speed": 15, "weaponType": "Machine Gun",
+      "route": ["JUW0101", "JUW0204"], "routeType": "CIRCLES"
+    },
+    {
+      "id": "AC-0005", "speed": 15, "weaponType": "Rockets",
+      "route": ["JUW0905", "JUW0201"], "routeType": "CIRCLES"
+    }
+  ]
+}

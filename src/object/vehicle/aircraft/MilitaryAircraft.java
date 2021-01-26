@@ -72,7 +72,7 @@ public final class MilitaryAircraft extends Aircraft {
         switch (airport_action) {
             case NONE, EMERGENCY, DEBOARDING, SET_PASS_NUM, BOARDING -> airport_action = AIRPORT_ACTION.REFUEL;
             case REFUEL -> {
-                if (refuel(20d / fps)) airport_action = AIRPORT_ACTION.READY;
+                if (refuel(20d / threadComponent.getFPS())) airport_action = AIRPORT_ACTION.READY;
             }
             case READY -> {
                 if (((Airport) Database.getAppObjects().get(routeComponent.getDest())).removeUsing(getId())) {
@@ -84,7 +84,7 @@ public final class MilitaryAircraft extends Aircraft {
                     System.out.println("Removing from airport error");
             }
         }
-        refuel(20d / fps);
+        refuel(20d / threadComponent.getFPS());
     }
 
     @Override

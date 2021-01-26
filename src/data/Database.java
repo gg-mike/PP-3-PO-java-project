@@ -12,7 +12,7 @@ import util.Utility;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -34,15 +34,15 @@ public class Database {
 
 
     /**
-     * Init database with json files
-     * @param filenames list of all json files in which data is stored
+     * Init database with json data.files
+     * @param filenames list of all json data.files in which data is stored
      * @param keys list of all keys for a given json file
      */
     public static void init(String [] filenames, String[][] keys) {
         for (int i = 0; i < filenames.length; i++) {
             for (int j = 0; j < keys[i].length; j++) {
                 try {
-                    JSONObject mainObj = new JSONObject(new String(Files.readAllBytes(Paths.get(filenames[i]))));
+                    JSONObject mainObj = new JSONObject(new String(Files.readAllBytes(Path.of(filenames[i]))));
                     JSONArray contents = mainObj.getJSONArray(keys[i][j]);
                     initAppObjects(contents);
                 } catch (IOException e) {
@@ -316,7 +316,7 @@ public class Database {
     }
 
     /**
-     * @return isInit (was database inited with json files)
+     * @return isInit (was database inited with json data.files)
      */
     public static boolean isInit() { return isInit; }
 

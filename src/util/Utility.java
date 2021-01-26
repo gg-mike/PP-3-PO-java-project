@@ -16,7 +16,7 @@ public class Utility {
 
         /**
          * Converts ArrayList to LinkedList
-         * Used for reading json files
+         * Used for reading json data.files
          * @param array ArrayList object to be converted
          * @return LinkedList consisting of String
          */

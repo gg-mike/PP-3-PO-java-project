@@ -42,8 +42,6 @@ public class MainWindow {
     private Group objectsGroup;
     private String objectChosenId;
 
-    // "Help" Tab Objects
-
     // "Info" Tab Objects
     public Button info_option1Button, info_option2Button;
     public Label info_nameLabel;
@@ -114,9 +112,9 @@ public class MainWindow {
      * Init database with json files
      */
     private void initDatabase() {
-        Database.init(new String[]{"./data/net.json", "./data/veh.json"}, new String[][] {
-                {"junctions", "airports", "tracks"},
-                {"aircrafts", "ships"}});
+        Database.init(new String[]{"_res/net.json", "_res/veh.json"}, new String[][] {
+                    {"junctions", "airports", "tracks"},
+                    {"aircrafts", "ships"}});
         toolbar_init();
         map_init();
         add_init();
@@ -612,6 +610,10 @@ public class MainWindow {
         add_addButton.setDisable(true);
         add_generateButton.setDisable(true);
         add_saveButton.setDisable(true);
+        ((MovingObject) Database.getAppObjects().get(jsonObject.getString("id"))).setLabelVisible(display_labelCheckbox.isSelected());
+        ((MovingObject) Database.getAppObjects().get(jsonObject.getString("id"))).setVisibleAtJunction(display_vehicleAtJunctionsCheckbox.isSelected());
+        ((MovingObject) Database.getAppObjects().get(jsonObject.getString("id"))).setVisibleWaitingAtJunction(display_vehicleWaitingAtJunctionsCheckbox.isSelected());
+        ((MovingObject) Database.getAppObjects().get(jsonObject.getString("id"))).changeSimulationSpeed(toolbar_simulationSpeedSlider.getValue());
     }
 
     /**

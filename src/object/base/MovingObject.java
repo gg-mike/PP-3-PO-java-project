@@ -16,9 +16,8 @@ import java.util.*;
  * Base class for all moving objects
  */
 public abstract class MovingObject extends AppObject implements Movable, Runnable {
-    public final int fps = 10;
 
-    protected volatile ThreadComponent threadComponent = new ThreadComponent(false, fps);
+    protected volatile ThreadComponent threadComponent = new ThreadComponent(false, 30);
     protected volatile MovementComponent movementComponent;
     protected volatile RouteComponent routeComponent;
 
@@ -29,7 +28,7 @@ public abstract class MovingObject extends AppObject implements Movable, Runnabl
     public MovingObject(String data) {
         super(data);
         guiComponent = new GUIMovableComponent(guiComponent);
-        movementComponent = new MovementComponent(((Number) Utility.JSONInfo.get("speed")).doubleValue() / fps, 10);
+        movementComponent = new MovementComponent(((Number) Utility.JSONInfo.get("speed")).doubleValue() / threadComponent.getFPS(), 10);
         routeComponent = new RouteComponent(Utility.Convertors.array2linkedList(Utility.JSONInfo.getArray("route")),
                 RouteComponent.RouteType.valueOf(((String) Utility.JSONInfo.get("routeType"))), Database.ObjectType.valueOf(getId().substring(0, 2)));
     }

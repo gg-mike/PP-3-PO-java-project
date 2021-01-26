@@ -10,7 +10,7 @@ import util.Utility;
 public final class CivilAircraft extends Aircraft {
     private final int maxPassengerN;
     private int currPassengerN;
-    private final int delta = 50 / fps;
+    private final int delta = 50 / ((Double) (threadComponent.getFPS())).intValue();
     private int endN = 0;
     private boolean isFullStopIntermediateAirports = false;
 
@@ -54,7 +54,7 @@ public final class CivilAircraft extends Aircraft {
                 if (deboarding()) airport_action = AIRPORT_ACTION.REFUEL;
             }
             case REFUEL -> {
-                if (refuel(20d / fps)) airport_action = AIRPORT_ACTION.READY;
+                if (refuel(20d / threadComponent.getFPS())) airport_action = AIRPORT_ACTION.READY;
             }
             case DEBOARDING -> {
                 if (deboarding()) airport_action = AIRPORT_ACTION.SET_PASS_NUM;
@@ -72,12 +72,12 @@ public final class CivilAircraft extends Aircraft {
                     airport_action = AIRPORT_ACTION.NONE;
 
                     movementComponent.setDest(routeComponent.setNewDest());
-                    if (routeComponent.getDest() == null) generateNewRoute();
+                    if (routeComponent.getDest() == null && !threadComponent.isExit()) generateNewRoute();
                 } else
                     System.out.println("Removing from airport error");
             }
         }
-        refuel(20d / fps);
+        refuel(20d / threadComponent.getFPS());
     }
 
     /**
