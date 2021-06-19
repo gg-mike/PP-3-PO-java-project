@@ -1,12 +1,19 @@
-# PP-PO-JavaProject
+# PP-PO-java-project
+GUI application for displaying and controlling plane and ship traffic.
 
-## Dane
-__Imię i nazwisko__ | __Indeks__ | __Grupa__ | __Dzień zajęć__
------ | ----- | ----- | -----
-Michał Grygiel | 145296 | i4.2 | poniedziałek 13:30 
+## Instruction
+* To initialise the application, press the `Init Database` button located in the upper left corner of the window.
+* Resetting the map and adjusting it to the extended window takes place after pressing the `Reset Map` button.
+* The slider at the top of the app is responsible for adjusting the speed of the simulation.
+* Further information can be found in the `Help` tab. 
 
-## Instrukcja
-* Aby zainicjalizować aplikacje należy wcisnąć przycisk ```Init Database``` znajdujący się w lewym górnym rogu okienka.
-* Resetowanie mapy oraz jej dopasowanie do rozszerzonego okienka następuję po wciśnięciu przycisku ```Reset Map```.
-* Suwak w górnej sekcji aplikacji odpowiada za dostosowanie prędkość symulacji.
-* Dalsze informacje mogą być znalezione w zakładce ```Help```.
+### Different displaying option
+![app1](screenshots/app1.png)
+
+![app2](screenshots/app2.png)
+
+### Controlling the parameters of airplanes
+![app3](screenshots/app3.png)
+
+### Adding new airplane
+![app4](screenshots/app4.png)

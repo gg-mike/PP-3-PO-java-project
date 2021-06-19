@@ -112,7 +112,7 @@ public class MainWindow {
      * Init database with json files
      */
     private void initDatabase() {
-        Database.init(new String[]{"_res/net.json", "_res/veh.json"}, new String[][] {
+        Database.init(new String[]{"src/_res/net.json", "src/_res/veh.json"}, new String[][] {
                     {"junctions", "airports", "tracks"},
                     {"aircrafts", "ships"}});
         toolbar_init();
